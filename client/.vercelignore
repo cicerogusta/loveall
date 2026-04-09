@@ -1,0 +1,9 @@
+node_modules/
+.env
+.env.local
+.git
+.gitignore
+README.md
+public/heart.svg
+android/
+capacitor.config.json

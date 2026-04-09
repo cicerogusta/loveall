@@ -1,0 +1,9 @@
+node_modules/
+client/dist/
+client/android/
+client/ios/
+server/data/
+.env
+*.db
+.DS_Store
+Thumbs.db

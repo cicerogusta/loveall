@@ -1,0 +1,21 @@
+services:
+  loveall:
+    build: .
+    ports:
+      - "${PORT:-3001}:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - JWT_SECRET=${JWT_SECRET:-MUDE_ESTA_CHAVE_EM_PRODUCAO}
+      - CORS_ORIGINS=${CORS_ORIGINS:-https://seudominio.com}
+    volumes:
+      - loveall-data:/app/server/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  loveall-data:

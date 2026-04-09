@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/heart.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#0f0f14" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="description" content="LoveAll - App de relacionamento inclusivo e seguro. Likes ilimitados!" />
+    <link rel="manifest" href="/manifest.json" />
+    <title>LoveAll - Amor para Todos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+      html, body, #root { background: #0f0f14; margin: 0; padding: 0; min-height: 100vh; }
+    </style>
+  </head>
+  <body style="background:#0f0f14;">
+    <div id="root">
+      <!-- Splash inline: aparece ANTES do React montar -->
+      <div id="inline-splash" style="
+        position:fixed;inset:0;z-index:9999;
+        display:flex;align-items:center;justify-content:center;flex-direction:column;
+        background:linear-gradient(135deg,#0f0f14 0%,#1a1025 50%,#0f0f14 100%);
+        overflow:hidden;
+      ">
+        <style>
+          @keyframes inlineSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+          @keyframes inlineHeartbeat{0%,100%{transform:scale(1)}15%{transform:scale(1.15)}30%{transform:scale(1)}}
+          @keyframes inlineGlow{0%,100%{box-shadow:0 0 20px rgba(236,72,153,.3)}50%{box-shadow:0 0 40px rgba(236,72,153,.6)}}
+          @keyframes inlineFadeIn{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+          @keyframes inlineFloat{0%,100%{transform:translateY(100vh)}50%{transform:translateY(-10vh)}}
+          #inline-splash .il-ring{
+            position:absolute;width:120px;height:120px;border-radius:50%;
+            border:2px solid transparent;border-top-color:rgba(236,72,153,.5);
+            animation:inlineSpin 2s linear infinite;
+          }
+          #inline-splash .il-ring2{
+            width:140px;height:140px;border-top-color:rgba(139,92,246,.4);
+            animation-direction:reverse;animation-duration:3s;
+          }
+          #inline-splash .il-heart{
+            width:64px;height:64px;display:flex;align-items:center;justify-content:center;
+            border-radius:50%;background:linear-gradient(135deg,#ec4899,#8b5cf6);
+            animation:inlineHeartbeat 1.2s ease-in-out infinite,inlineGlow 2s ease-in-out infinite;
+            position:relative;z-index:2;
+          }
+          #inline-splash .il-heart svg{width:36px;height:36px;color:#fff;fill:#fff;}
+          #inline-splash .il-title{
+            margin-top:28px;font-family:'Inter',sans-serif;font-size:28px;font-weight:800;
+            background:linear-gradient(135deg,#ec4899,#f472b6,#8b5cf6);
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+            animation:inlineFadeIn .8s ease-out .3s both;
+          }
+          #inline-splash .il-sub{
+            margin-top:6px;font-family:'Inter',sans-serif;font-size:13px;
+            color:rgba(255,255,255,.5);animation:inlineFadeIn .8s ease-out .6s both;
+          }
+          #inline-splash .il-particle{
+            position:absolute;font-size:10px;opacity:.15;
+            animation:inlineFloat 5s ease-in-out infinite;
+          }
+        </style>
+        <div class="il-particle" style="left:10%;animation-delay:0s;font-size:12px;">♥</div>
+        <div class="il-particle" style="left:25%;animation-delay:1s;font-size:8px;">♥</div>
+        <div class="il-particle" style="left:50%;animation-delay:2s;font-size:14px;">♥</div>
+        <div class="il-particle" style="left:70%;animation-delay:0.5s;font-size:9px;">♥</div>
+        <div class="il-particle" style="left:85%;animation-delay:1.5s;font-size:11px;">♥</div>
+        <div style="position:relative;display:flex;align-items:center;justify-content:center;">
+          <div class="il-ring"></div>
+          <div class="il-ring il-ring2"></div>
+          <div class="il-heart">
+            <svg viewBox="0 0 24 24"><path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z"/></svg>
+          </div>
+        </div>
+        <div class="il-title">LoveAll</div>
+        <div class="il-sub">Amor para Todos</div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.jsx"></script>
+
+    <!-- VLibras - Tradução para Libras -->
+    <div vw class="enabled">
+      <div vw-access-button class="active"></div>
+      <div vw-plugin-wrapper>
+        <div class="vw-plugin-top-wrapper"></div>
+      </div>
+    </div>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>
+      new window.VLibras.Widget('https://vlibras.gov.br/app');
+    </script>
+    <style>
+      /* VLibras sempre visível acima de tudo */
+      [vw] { position: fixed !important; z-index: 99999 !important; }
+      [vw-access-button] {
+        position: fixed !important;
+        bottom: 90px !important;
+        right: 10px !important;
+        z-index: 99999 !important;
+      }
+      [vw-plugin-wrapper] { z-index: 99999 !important; }
+      /* Na splash, esconder para não atrapalhar animação */
+      .splash-screen ~ [vw] { display: none; }
+    </style>
+  </body>
+</html>

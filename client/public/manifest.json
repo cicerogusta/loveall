@@ -1,0 +1,13 @@
+{
+  "name": "LoveAll - Amor para Todos",
+  "short_name": "LoveAll",
+  "description": "App de relacionamento inclusivo e seguro. Likes ilimitados!",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f0f14",
+  "theme_color": "#ec4899",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/heart.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
