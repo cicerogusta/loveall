@@ -1,5 +1,5 @@
 {
-  "sha256": "6c02e73f66126f8a37cb921b0f54cc5e52684cfb9004d4401a9b4b91e81ce1ba",
+  "sha256": "ec35c54a07775ec447c0c70b5c27a3355d19c5d500277e2b4417c12395bddbcf",
   "files": [
     "Dockerfile",
     ".dockerignore",
@@ -33,6 +33,7 @@
     "server/src/database/postgres.js",
     "server/src/database/sql.js",
     "server/src/database/sqlite-adapter.js",
+    "server/src/database/startup-error.js",
     "server/src/database/migrations/001-initial.sql",
     "server/src/config/billing.js",
     "server/src/config/proxy.js",

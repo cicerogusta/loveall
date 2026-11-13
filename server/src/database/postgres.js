@@ -2,6 +2,7 @@ import { AsyncLocalStorage } from 'node:async_hooks';
 import { readFile } from 'node:fs/promises';
 import pg from 'pg';
 import { postgresSql } from './sql.js';
+import { databaseStartupError } from './startup-error.js';
 
 pg.types.setTypeParser(20, (value) => (Number.isSafeInteger(Number(value)) ? Number(value) : value));
 
@@ -9,6 +10,15 @@ export async function postgresOptions(env) {
   const url = new URL(env.DATABASE_URL);
   if (!['postgres:', 'postgresql:'].includes(url.protocol)) throw new Error('Invalid DATABASE_URL');
   const loopback = ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
+  if (
+    !url.hostname ||
+    (!loopback && !url.username) ||
+    !url.pathname ||
+    url.pathname === '/' ||
+    /\[(?:YOUR[-_]PASSWORD|PROJECT[-_]REF|POOLER[-_]HOST)\]/i.test(decodeURIComponent(url.toString()))
+  ) {
+    throw new Error('Incomplete DATABASE_URL');
+  }
   // Parâmetros SSL da URL podem substituir o objeto ssl do pg: aplicamos uma
   // política única, validando certificado e hostname em toda conexão remota.
   url.search = '';
@@ -45,7 +55,12 @@ export async function migratePostgres(pool) {
     }
     await client.query('COMMIT');
   } catch (error) {
-    await client.query('ROLLBACK');
+    // Uma conexão interrompida também pode impedir ROLLBACK; preserve a causa inicial.
+    try {
+      await client.query('ROLLBACK');
+    } catch {
+      /* conexão indisponível */
+    }
     throw error;
   } finally {
     client.release();
@@ -97,13 +112,22 @@ export function postgresAdapter(pool) {
 }
 
 export async function openPostgres(env = process.env) {
-  const pool = new pg.Pool(await postgresOptions(env));
-  pool.on('error', () => console.error('[Database] Conexão PostgreSQL indisponível.'));
+  let pool;
+  let stage = 'configuration';
   try {
+    pool = new pg.Pool(await postgresOptions(env));
+    pool.on('error', () => console.error('[Database] Conexão PostgreSQL indisponível.'));
+    stage = 'connection';
     await migratePostgres(pool);
     return postgresAdapter(pool);
-  } catch {
-    await pool.end();
-    throw new Error('Não foi possível inicializar PostgreSQL; confira a conexão e o certificado.');
+  } catch (error) {
+    if (pool) {
+      try {
+        await pool.end();
+      } catch {
+        /* não substitui o diagnóstico original */
+      }
+    }
+    throw databaseStartupError(error, stage);
   }
 }

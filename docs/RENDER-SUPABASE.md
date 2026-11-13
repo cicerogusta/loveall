@@ -79,3 +79,18 @@ Fontes oficiais verificadas em 12/11/2026: [Render Free](https://render.com/docs
 `cd server; npm ci; npm test` executa os contratos locais, o PostgreSQL embarcado PGlite pelo protocolo `pg`, transações, billing e o adaptador Storage com respostas simuladas. O workflow da API também inclui um job PostgreSQL 16 real em ambiente descartável. A execução remota desse workflow depende de enviar o código ao repositório.
 
 Testes locais não substituem conferir Supabase, TLS do projeto real, proxy Render, suspensão/despertar e persistência após um deploy. Essas verificações ficam pendentes até criar os recursos.
+## Diagnóstico de falha ao iniciar PostgreSQL
+
+Se o log mostrar apenas `Não foi possível inicializar PostgreSQL; confira a conexão e o certificado.`, o deploy ainda usa o tratamento antigo, que ocultava a causa do driver. Envie as alterações locais ao repositório conectado ao Render e faça um deploy desse commit. As mensagens novas começam com `[Database:CODIGO]`, sem imprimir a URL ou a senha.
+
+| Código | O que conferir |
+| --- | --- |
+| `DATABASE_CONFIGURATION_INVALID` | Connection string completa, sem aspas ou marcadores; senha codificada para URL |
+| `28P01` / `28000` | Senha do banco e usuário completo `postgres.PROJECT_REF` do Session pooler |
+| `ENETUNREACH` / `ENOTFOUND` | Host copiado do Session pooler, porta 5432, compatível com IPv4 |
+| `ETIMEDOUT` / `ECONNREFUSED` | Projeto ativo, host, porta e restrições de rede |
+| `SELF_SIGNED_CERT_IN_CHAIN` / `UNABLE_TO_VERIFY_LEAF_SIGNATURE` | CA do projeto como Secret File; `PG_CA_CERT_PATH` apontando para esse arquivo |
+| `42501` | Usuário com permissão para inicializar as tabelas no schema privado `loveall` |
+| `ENOENT` | Caminho do certificado e arquivos de migração presentes no deploy |
+
+Para a CA, consulte Database Settings → SSL Configuration no Supabase. No Render, cadastre o certificado em Secret Files e use o caminho real fornecido pelo painel. Não desative a validação TLS para contornar a falha. A configuração correta depende do código registrado; a mensagem genérica antiga não comprova problema de certificado.

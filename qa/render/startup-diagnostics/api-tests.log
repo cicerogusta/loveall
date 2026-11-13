@@ -1,0 +1,242 @@
+
+> loveall-server@1.0.0 test
+> node --test test/*.test.js
+
+TAP version 13
+# Subtest: local async transactions isolate other requests and release the queue after rollback
+ok 1 - local async transactions isolate other requests and release the queue after rollback
+  ---
+  duration_ms: 25.2542
+  type: 'test'
+  ...
+# Subtest: concurrent likes create one match and concurrent uploads respect the reserved quota
+ok 2 - concurrent likes create one match and concurrent uploads respect the reserved quota
+  ---
+  duration_ms: 1298.7883
+  type: 'test'
+  ...
+# Subtest: startup diagnostics identify certificate, authentication and network failures without driver secrets
+ok 3 - startup diagnostics identify certificate, authentication and network failures without driver secrets
+  ---
+  duration_ms: 3.2172
+  type: 'test'
+  ...
+# Subtest: invalid URLs and unreplaced password placeholders fail without exposing connection credentials
+ok 4 - invalid URLs and unreplaced password placeholders fail without exposing connection credentials
+  ---
+  duration_ms: 2.0207
+  type: 'test'
+  ...
+# Subtest: a failed pool connection is closed and reports a safe actionable diagnostic
+ok 5 - a failed pool connection is closed and reports a safe actionable diagnostic
+  ---
+  duration_ms: 1.9167
+  type: 'test'
+  ...
+# Subtest: Supabase adapter sends JPEG privately and propagates upload/deletion failures for retry
+ok 6 - Supabase adapter sends JPEG privately and propagates upload/deletion failures for retry
+  ---
+  duration_ms: 60.0834
+  type: 'test'
+  ...
+# Subtest: ephemeral Render storage and public photo buckets are refused at startup
+ok 7 - ephemeral Render storage and public photo buckets are refused at startup
+  ---
+  duration_ms: 2.4149
+  type: 'test'
+  ...
+# Subtest: authenticated photo upload, validation, serving and profile persistence
+ok 8 - authenticated photo upload, validation, serving and profile persistence
+  ---
+  duration_ms: 1100.9324
+  type: 'test'
+  ...
+# Subtest: verified subscription is acknowledged once, encrypted and restored idempotently
+ok 9 - verified subscription is acknowledged once, encrypted and restored idempotently
+  ---
+  duration_ms: 31.358
+  type: 'test'
+  ...
+# Subtest: a valid purchase cannot be transferred or replayed against another account
+ok 10 - a valid purchase cannot be transferred or replayed against another account
+  ---
+  duration_ms: 2.7384
+  type: 'test'
+  ...
+# Subtest: unknown products and mismatched Google product identifiers never grant access
+ok 11 - unknown products and mismatched Google product identifiers never grant access
+  ---
+  duration_ms: 1.8581
+  type: 'test'
+  ...
+# Subtest: state SUBSCRIPTION_STATE_PENDING does not grant or acknowledge benefits
+ok 12 - state SUBSCRIPTION_STATE_PENDING does not grant or acknowledge benefits
+  ---
+  duration_ms: 1.4849
+  type: 'test'
+  ...
+# Subtest: state SUBSCRIPTION_STATE_ON_HOLD does not grant or acknowledge benefits
+ok 13 - state SUBSCRIPTION_STATE_ON_HOLD does not grant or acknowledge benefits
+  ---
+  duration_ms: 1.9868
+  type: 'test'
+  ...
+# Subtest: state SUBSCRIPTION_STATE_PAUSED does not grant or acknowledge benefits
+ok 14 - state SUBSCRIPTION_STATE_PAUSED does not grant or acknowledge benefits
+  ---
+  duration_ms: 1.8969
+  type: 'test'
+  ...
+# Subtest: state SUBSCRIPTION_STATE_EXPIRED does not grant or acknowledge benefits
+ok 15 - state SUBSCRIPTION_STATE_EXPIRED does not grant or acknowledge benefits
+  ---
+  duration_ms: 1.7666
+  type: 'test'
+  ...
+# Subtest: state SUBSCRIPTION_STATE_PENDING_PURCHASE_CANCELED does not grant or acknowledge benefits
+ok 16 - state SUBSCRIPTION_STATE_PENDING_PURCHASE_CANCELED does not grant or acknowledge benefits
+  ---
+  duration_ms: 1.4307
+  type: 'test'
+  ...
+# Subtest: cancellation preserves prepaid access only until expiry; grace period keeps access
+ok 17 - cancellation preserves prepaid access only until expiry; grace period keeps access
+  ---
+  duration_ms: 3.3385
+  type: 'test'
+  ...
+# Subtest: acknowledgement failure can be retried without granting unconfirmed access
+ok 18 - acknowledgement failure can be retried without granting unconfirmed access
+  ---
+  duration_ms: 3.0955
+  type: 'test'
+  ...
+# Subtest: duplicate or delayed notifications fetch current Google status and revoke expired access
+ok 19 - duplicate or delayed notifications fetch current Google status and revoke expired access
+  ---
+  duration_ms: 6.0238
+  type: 'test'
+  ...
+# Subtest: completion while Android is closed is verified using the Google account link and acknowledged
+ok 20 - completion while Android is closed is verified using the Google account link and acknowledged
+  ---
+  duration_ms: 2.342
+  type: 'test'
+  ...
+# Subtest: pending replacement keeps previous access; completed replacement cannot be resurrected by old token
+ok 21 - pending replacement keeps previous access; completed replacement cannot be resurrected by old token
+  ---
+  duration_ms: 4.7844
+  type: 'test'
+  ...
+# Subtest: unverified stale records do not grant access
+ok 22 - unverified stale records do not grant access
+  ---
+  duration_ms: 1.6663
+  type: 'test'
+  ...
+# Subtest: token encryption detects tampering and requires the original key
+ok 23 - token encryption detects tampering and requires the original key
+  ---
+  duration_ms: 1.2004
+  type: 'test'
+  ...
+# Subtest: push notifications require correct OIDC audience, verified email and trusted service account
+ok 24 - push notifications require correct OIDC audience, verified email and trusted service account
+  ---
+  duration_ms: 1.0007
+  type: 'test'
+  ...
+# Subtest: billing stays disabled without account configuration and cannot be enabled partially
+ok 25 - billing stays disabled without account configuration and cannot be enabled partially
+  ---
+  duration_ms: 971.0141
+  type: 'test'
+  ...
+# Subtest: PostgreSQL TLS is mandatory remotely and connection-string flags cannot disable certificate validation
+ok 26 - PostgreSQL TLS is mandatory remotely and connection-string flags cannot disable certificate validation
+  ---
+  duration_ms: 1.5855
+  type: 'test'
+  ...
+# Subtest: PostgreSQL migrations are repeatable, private and preserve async transaction rollback and billing
+ok 27 - PostgreSQL migrations are repeatable, private and preserve async transaction rollback and billing
+  ---
+  duration_ms: 1530.9577
+  type: 'test'
+  ...
+# Subtest: HTTP contract works with PostgreSQL: registration, discovery, match, chat, photos, blocks and deletion
+ok 28 - HTTP contract works with PostgreSQL: registration, discovery, match, chat, photos, blocks and deletion
+  ---
+  duration_ms: 1913.6485
+  type: 'test'
+  ...
+# Subtest: direct access ignores forwarded addresses and one proxy uses the closest forwarded client
+ok 29 - direct access ignores forwarded addresses and one proxy uses the closest forwarded client
+  ---
+  duration_ms: 75.8592
+  type: 'test'
+  ...
+# Subtest: unrestricted or malformed proxy trust configuration is rejected
+ok 30 - unrestricted or malformed proxy trust configuration is rejected
+  ---
+  duration_ms: 0.4992
+  type: 'test'
+  ...
+# Subtest: startup rejects missing, short and known-default JWT secrets
+ok 31 - startup rejects missing, short and known-default JWT secrets
+  ---
+  duration_ms: 251.1925
+  type: 'test'
+  ...
+# Subtest: registration validates real dates, payload types, identity and explicit consent
+ok 32 - registration validates real dates, payload types, identity and explicit consent
+  ---
+  duration_ms: 967.717
+  type: 'test'
+  ...
+# Subtest: profile rejects invalid values and another account photo without partial writes
+ok 33 - profile rejects invalid values and another account photo without partial writes
+  ---
+  duration_ms: 964.7143
+  type: 'test'
+  ...
+# Subtest: legacy accounts must accept current terms before posting, but can delete without accepting
+ok 34 - legacy accounts must accept current terms before posting, but can delete without accepting
+  ---
+  duration_ms: 837.2719
+  type: 'test'
+  ...
+# Subtest: unavailable payments, calls and sockets cannot mutate account balances
+ok 35 - unavailable payments, calls and sockets cannot mutate account balances
+  ---
+  duration_ms: 623.0112
+  type: 'test'
+  ...
+# Subtest: photos disappear immediately when marked for removal and abandoned drafts are purged
+ok 36 - photos disappear immediately when marked for removal and abandoned drafts are purged
+  ---
+  duration_ms: 733.1459
+  type: 'test'
+  ...
+# Subtest: blocked profiles and malformed interactions are rejected without exposing birthdates
+ok 37 - blocked profiles and malformed interactions are rejected without exposing birthdates
+  ---
+  duration_ms: 819.789
+  type: 'test'
+  ...
+# Subtest: deletion requires password and removes related records and photos while preserving unrelated conversations
+ok 38 - deletion requires password and removes related records and photos while preserving unrelated conversations
+  ---
+  duration_ms: 1484.8529
+  type: 'test'
+  ...
+1..38
+# tests 38
+# suites 0
+# pass 38
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 6927.8798
