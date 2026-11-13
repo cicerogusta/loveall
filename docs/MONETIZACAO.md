@@ -2,7 +2,7 @@
 
 Implementação preparada em 12/11/2026 para o Android Kotlin/Compose. O produto escolhido é **assinatura para remover anúncios**. Chamadas e checkout externo continuam indisponíveis. O código não cria contas, produtos, credenciais ou anúncios nas plataformas.
 
-**Por padrão, pagamentos e anúncios ficam desligados.** O código compila e possui testes locais, mas a liberação depende das configurações reais e da homologação no teste interno da Play. Não foram realizadas compras reais nem verificada a aprovação de uma conta AdMob.
+**Configuração atual:** anúncios habilitados em `gradle.properties`, com os IDs AdMob fornecidos pelo proprietário. Debug usa banner de teste; release usa a unidade real. A assinatura Play permanece desligada. O código compila e possui testes locais, mas mensagens de privacidade, verificação app-ads.txt, aprovação AdMob e homologação real ainda não foram confirmadas. Não foram realizadas compras reais.
 
 ## O que foi implementado
 
@@ -79,13 +79,13 @@ As configurações ficam em propriedades Gradle. Os identificadores AdMob são p
 
 ```properties
 loveall.adsEnabled=true
-loveall.playBillingEnabled=true
+loveall.playBillingEnabled=false
 loveall.admobAppId=APP_ID_REAL_DO_ADMOB
 loveall.admobBannerId=AD_UNIT_ID_REAL_DO_BANNER
-loveall.apiBaseUrl=https://HOST_REAL/api/
+loveall.apiBaseUrl=https://loveall-api.onrender.com/api/
 ```
 
-Usar propriedades locais ou do ambiente de build. Não colocar o JSON da conta de serviço nem a chave de cifragem nessas propriedades Android.
+O exemplo acima habilita somente anúncios. A assinatura continua desligada até concluir os registros Play e a homologação; só então habilitar `loveall.playBillingEnabled=true`. Usar propriedades locais ou do ambiente de build. Não colocar o JSON da conta de serviço nem a chave de cifragem nessas propriedades Android.
 
 Em **debug**, o banner sempre usa a unidade de teste oficial da Google, mesmo que haja uma unidade real configurada. O App ID real pode ser usado para validar suas mensagens UMP; sem ele, há apenas o App ID de demonstração e não se pode comprovar suas mensagens de consentimento.
 
@@ -113,3 +113,58 @@ A rodada final passou com **142 testes JVM, 26 instrumentados Android e 28 teste
 Os resultados e os limites estão em [qa/monetization/results.json](../qa/monetization/results.json). A [captura da tela](../qa/monetization/ad-free-offer.png) usa uma oferta e um preço fictícios de teste, sem configurar uma venda real.
 
 O bundle de verificação continua sem assinatura e usa uma URL `.invalid` apenas para compilar. Monetização está desligada nesse artefato. Ele não deve ser publicado. O debug foi recompilado para a API local depois da verificação de release.
+
+
+## 7. Configuração AdMob em andamento
+
+A API pública já está em `https://loveall-api.onrender.com/api/`. A integração Android de banner e UMP está preparada. Os IDs da conta AdMob foram fornecidos pelo proprietário e configurados no projeto; compilar com esses IDs não comprova aprovação da conta ou exibição de anúncios reais.
+
+### Cadastrar o app e o banner
+
+1. Em [AdMob](https://admob.google.com/), abra Aplicativos → Adicionar aplicativo → Android. Se ainda não está na Google Play, informe que não está publicado. A API estar online não significa que o aplicativo esteja publicado na loja.
+2. Cadastre o nome LoveAll. O pacote de distribuição é `com.loveall.app`; o debug local tem sufixo `.native.debug`.
+3. No app LoveAll, abra Unidades/Blocos de anúncios → Adicionar unidade → **Banner**. Nome sugerido: **Banner Descoberta**. Esse é o formato implementado no app.
+4. Copie o **App ID** (`ca-app-pub-...~...`) e o **ID da unidade** (`ca-app-pub-.../...`). São identificadores públicos. Não é necessário fornecer login, senha ou credenciais de pagamento ao código.
+5. Configure Privacidade e mensagens no AdMob e publique as mensagens aplicáveis às regiões de distribuição. A URL da política de privacidade publicada ainda precisa ser definida para esse cadastro.
+
+Os anúncios no debug sempre usam a unidade de teste da Google. Com seu App ID real, será possível testar também a configuração UMP da sua conta. Não clicar em anúncios reais para testar.
+
+### Publicar app-ads.txt
+
+A API agora prepara a rota pública **`/app-ads.txt`** na raiz do host, fora de `/api/`. Para ativá-la após enviar o código ao repositório e fazer deploy, adicione no Render:
+
+```text
+ADMOB_PUBLISHER_ID=pub-SEUS_16_DIGITOS
+```
+
+O trecho acima é somente formato, não um valor válido. Copie o Publisher ID real da conta AdMob. O identificador contém os mesmos 16 dígitos de publicador presentes no App ID; não inclui o sufixo do app ou do banner. Confira a linha personalizada fornecida pelo AdMob.
+
+Com a configuração real, `https://loveall-api.onrender.com/app-ads.txt` deve responder HTTP 200 e texto simples com a linha `google.com, pub-<id real>, DIRECT, f08c47fec0942fa0`. Sem configuração, responde 404 e não declara um vendedor fictício. Nome, conteúdo ou retorno HTML de uma página de erro não substituem esse arquivo.
+
+Cadastre o site de desenvolvedor na ficha da Google Play correspondente ao host que efetivamente hospedar o arquivo; não cadastre a URL da API `/api/` como se fosse a política de privacidade. A verificação depende de vincular o app à loja, o Google rastrear o arquivo e aprovar a prontidão do aplicativo. Não está concluída apenas porque a rota existe no código.
+
+O Render gratuito suspende a API por inatividade e pode atrasar o acesso do rastreador. Para hospedar os arquivos de suporte em serviço estático, Firebase Hosting é uma alternativa indicada pelo Google; exige configuração própria. Ainda não foi criado um site de desenvolvedor separado nem publicada uma política de privacidade por estes ajustes.
+
+Fontes: [cadastro do app](https://support.google.com/admob/answer/9989980), [verificação](https://support.google.com/admob/answer/14538460), [app-ads.txt](https://support.google.com/admob/answer/9363762) e [formato Google](https://developers.google.com/admob/android/next-gen/app-ads).
+
+
+## 8. Identificadores configurados do LoveAll
+
+| Configuração | Valor público |
+| --- | --- |
+| App ID | `ca-app-pub-7902597376494373~8119920674` |
+| Banner Descoberta | `ca-app-pub-7902597376494373/6446766419` |
+| Publisher ID | `pub-7902597376494373` |
+| API Android | `https://loveall-api.onrender.com/api/` |
+
+`gradle.properties` habilita anúncios e registra os dois IDs; mantém `loveall.playBillingEnabled=false`. O App ID real é usado no manifesto e na inicialização GMA/UMP. A unidade de banner do debug continua sendo a demonstração oficial da Google. O release usa o banner acima e passa pelas validações de IDs reais do build. Esses valores são públicos e não são credenciais para entrar na conta.
+
+O arquivo exato para publicação está em [deploy/admob/app-ads.txt](../deploy/admob/app-ads.txt). O `render.yaml` e o exemplo de Environment já incluem `ADMOB_PUBLISHER_ID=pub-7902597376494373`. No serviço Render existente, cadastre essa variável em Environment se o Blueprint não a sincronizar; publique também o código da rota `/app-ads.txt`. Ao verificar nesta etapa, a URL pública ainda retornou HTTP 404: não foi confirmado um deploy dessa rota/configuração.
+
+Linha a ser exibida na URL pública:
+
+```text
+google.com, pub-7902597376494373, DIRECT, f08c47fec0942fa0
+```
+
+Antes de liberar anúncios reais, configurar e conferir Privacidade e mensagens no AdMob, publicar a política de privacidade em URL acessível, vincular o app à ficha da Play com o site de desenvolvedor correto e concluir verificação/prontidão no AdMob. Esses passos de conta não são feitos pela compilação e continuam pendentes.

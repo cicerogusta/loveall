@@ -1,0 +1,12 @@
+{
+  "date": "2026-11-12",
+  "status": "Actual IDs configured; see configuration.json for current validation and remaining account steps",
+  "api_tests_passed": 40,
+  "android_jvm_tests_passed": 142,
+  "android_ads_enabled_test_build": "passed using Google demo app ID and banner",
+  "app_ads_txt": "Endpoint prepared locally; requires real ADMOB_PUBLISHER_ID and deployment",
+  "live_ads_verified": false,
+  "consent_with_owner_account_verified": false,
+  "play_billing_enabled": false,
+  "account_approval": "not verified"
+}

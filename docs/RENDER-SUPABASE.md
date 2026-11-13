@@ -2,7 +2,7 @@
 
 Opção escolhida em 12/11/2026 para cadastro pessoal: **Render Free** hospeda a API Node; **Supabase Free** mantém PostgreSQL e fotos. O aplicativo continua Android Kotlin/Compose. O HTTPS usa o endereço `onrender.com`, sem comprar domínio.
 
-**Estado:** integração preparada e testada localmente; contas, projeto, credenciais e serviço público ainda precisam ser configurados. Nenhuma API foi publicada por estes ajustes. A Oracle ficou como alternativa histórica, pois o cadastro brasileiro apresentado só oferecia Corporate.
+**Estado atual:** API publicada pelo usuário em `https://loveall-api.onrender.com/api/`. O health check público respondeu HTTP 200 com `status: ok`; o endpoint de sessão exige autenticação (HTTP 401 sem token). O Android já usa essa URL por padrão em `gradle.properties`. Cadastro, login, envio de fotos, persistência após redeploy e demais fluxos com contas cloud ainda precisam ser verificados. A Oracle ficou como alternativa histórica, pois o cadastro brasileiro apresentado só oferecia Corporate.
 
 ## 1. Criar as duas contas
 
@@ -53,7 +53,7 @@ O deploy automático está desativado. Revise e inicie o primeiro deploy pelo pa
 - Teste duas contas: curtida mútua, match, mensagens, bloqueio e exclusão de conta. A foto de uma conta excluída deve deixar de ser servida imediatamente.
 - Confira no Supabase que o bucket está privado e que o schema `loveall` não foi exposto pela Data API.
 
-Depois da homologação, configure no Android `loveall.apiBaseUrl=https://SEU-SERVICO.onrender.com/api/`, seguindo `docs/ANDROID.md`. Nenhuma senha, connection string ou chave Supabase entra no APK. O cliente tolera até 90 s de leitura e 120 s totais para acomodar o despertar da instância, mas ainda pode apresentar indisponibilidade.
+O Android está configurado com `loveall.apiBaseUrl=https://loveall-api.onrender.com/api/` em `gradle.properties`; veja `docs/ANDROID.md` para sobrescrever esse endereço. Nenhuma senha, connection string ou chave Supabase entra no APK. O cliente tolera até 90 s de leitura e 120 s totais para acomodar o despertar da instância, mas ainda pode apresentar indisponibilidade.
 
 ## 5. Dados locais, manutenção e backup
 

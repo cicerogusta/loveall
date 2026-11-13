@@ -28,3 +28,5 @@ services:
         value: loveall-photos
       - key: PLAY_BILLING_ENABLED
         value: "false"
+      - key: ADMOB_PUBLISHER_ID
+        value: pub-7902597376494373

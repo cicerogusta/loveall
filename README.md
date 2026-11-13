@@ -6,9 +6,9 @@ Para entender a implementação, leia o [guia explicativo do código](GUIA-DO-CO
 
 **Publicação:** consulte a [revisão para a Google Play](docs/REVISAO-PUBLICACAO.md). Os ajustes de segurança e exclusão de conta estão documentados; infraestrutura, contatos responsáveis e configuração da loja ficam para a etapa final.
 
-**API gratuita:** veja o [guia Render + Supabase](docs/RENDER-SUPABASE.md). A opção escolhida usa cadastro pessoal, PostgreSQL e fotos em bucket privado. Código preparado; contas e publicação real ainda pendentes. O plano gratuito serve para início e homologação.
+**API gratuita:** publicada em `https://loveall-api.onrender.com/api/`, com PostgreSQL e fotos em bucket privado no Supabase. O Android usa esse endereço por padrão. Veja o [guia Render + Supabase](docs/RENDER-SUPABASE.md) para configuração e limites do plano gratuito; a homologação dos fluxos com usuários reais continua pendente.
 
-**Monetização:** a [assinatura sem anúncios e o AdMob](docs/MONETIZACAO.md) possuem integração de código. Ficam desligados até configurar os registros e homologar compras, notificações e anúncios com as contas reais.
+**Monetização:** [AdMob e assinatura sem anúncios](docs/MONETIZACAO.md) possuem integração de código. Anúncios estão configurados com os IDs do proprietário; debug usa banner de teste e release a unidade real. Aprovação AdMob, consentimento e verificação app-ads.txt ainda precisam ser confirmados. A assinatura Play continua desligada.
 
 ```powershell
 .\gradlew.bat :app:assembleDebug
@@ -25,6 +25,6 @@ No Linux/macOS, use `bash gradlew` no lugar de `.\gradlew.bat`.
 
 O [redesign visual](docs/DESIGN.md) usa tipografia editorial, ilustração original, cartões de perfil imersivos e temas claro/escuro, mantendo o aplicativo 100% nativo.
 
-**Node.js não é necessário para compilar o Android.** Para login, matches e mensagens entre pessoas, execute a API existente ou configure o endereço do servidor. No emulador, o padrão é `http://10.0.2.2:3001/api/`.
+**Node.js não é necessário para compilar o Android.** Login, matches e mensagens usam a API publicada por padrão, em emulador e dispositivo físico. Para desenvolver com a API local, sobrescreva `loveall.apiBaseUrl` conforme [como executar](COMO-EXECUTAR.md).
 
 Consulte [como executar](COMO-EXECUTAR.md), o [guia Android](docs/ANDROID.md) e o [inventário e pendências](docs/MIGRATION.md). O código do app ser nativo não significa que as integrações de mídia, publicidade e compras já estejam prontas para produção.

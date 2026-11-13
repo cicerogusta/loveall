@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-12",
+  "app_id": "ca-app-pub-7902597376494373~8119920674",
+  "release_banner_id": "ca-app-pub-7902597376494373/6446766419",
+  "publisher_id": "pub-7902597376494373",
+  "debug_banner_id": "ca-app-pub-3940256099942544/9214589741",
+  "ads_enabled": true,
+  "play_billing_enabled": false,
+  "android_jvm_tests_passed": 142,
+  "android_jvm_failures": 0,
+  "debug_apk": "compiled",
+  "release_bundle": "compiled with R8",
+  "release_bundle_signed": false,
+  "android_test_sources": "compiled; instrumentation not run",
+  "lint_debug": {
+    "Error": 0,
+    "Fatal": 0,
+    "Warning": 24
+  },
+  "api_tests_passed_previous_preparation": 40,
+  "app_ads_txt_live_status": 404,
+  "app_ads_txt_deployment": "pending code deployment and ADMOB_PUBLISHER_ID on existing Render service",
+  "owner_ump_messages": "not verified",
+  "admob_account_approval": "not verified",
+  "live_ads_verified": false
+}

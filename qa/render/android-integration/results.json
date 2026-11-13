@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-12",
+  "api_base_url": "https://loveall-api.onrender.com/api/",
+  "live_checks": {
+    "health_status": 200,
+    "health_body": {
+      "status": "ok",
+      "app": "LoveAll",
+      "version": "1.0.0",
+      "env": "production"
+    },
+    "unauthenticated_me_status": 401
+  },
+  "android": {
+    "debug_apk": "compiled",
+    "android_test_sources": "compiled; not executed",
+    "jvm_tests": 142,
+    "jvm_failures": 0,
+    "installed_on_device": false
+  },
+  "production_data_written": false,
+  "remaining_cloud_checks": [
+    "Registration and login",
+    "Profile photo upload and retrieval",
+    "Matches and messaging",
+    "Persistence after redeploy"
+  ]
+}

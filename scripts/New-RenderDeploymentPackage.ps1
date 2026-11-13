@@ -5,7 +5,7 @@ if (-not $OutputPath) { $OutputPath = Join-Path $projectRoot 'qa\render\loveall-
 $OutputPath = [System.IO.Path]::GetFullPath($OutputPath)
 $files = @(
     'Dockerfile', '.dockerignore', 'render.yaml', 'server/package.json', 'server/package-lock.json',
-    'server/src', 'deploy/render/environment.env.example', 'docs/RENDER-SUPABASE.md'
+    'server/src', 'deploy/render/environment.env.example', 'deploy/admob/app-ads.txt', 'docs/RENDER-SUPABASE.md'
 )
 foreach ($file in $files) {
     if (-not (Test-Path -LiteralPath (Join-Path $projectRoot $file))) { throw "Arquivo ausente: $file" }

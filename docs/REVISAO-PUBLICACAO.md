@@ -98,4 +98,11 @@ Código adaptado sem alterar o contrato do Android: PostgreSQL assíncrono, sche
 
 Nesta rodada: **35 testes da API e 142 testes JVM aprovados**, APK debug compilado e auditoria das dependências de produção sem vulnerabilidades conhecidas. Os testes PostgreSQL locais usam PGlite pelo protocolo `pg`; o workflow também prepara PostgreSQL 16 real, ainda não executado remotamente. Instrumentação anterior não foi repetida nesta mudança. Evidências em `qa/render/results.json`.
 
-Não houve publicação. O usuário ainda vai criar as contas Render/Supabase. Permanecem pendentes configuração real, TLS do projeto, proxy, despertar, persistência após deploy e backup externo. Docker não está disponível neste computador para validar a imagem localmente. Consulte [o procedimento atual](RENDER-SUPABASE.md).
+Na preparação anterior ainda não havia publicação nem contas Render/Supabase configuradas. Permanecem pendentes configuração real, TLS do projeto, proxy, despertar, persistência após deploy e backup externo. Docker não está disponível neste computador para validar a imagem localmente. Consulte [o procedimento atual](RENDER-SUPABASE.md).
+
+
+### API publicada e endereço Android configurado — 12/11/2026
+
+Após o usuário concluir o deploy e informar `https://loveall-api.onrender.com/`, o health check `/api/health` respondeu HTTP 200 com `status: ok` e ambiente `production`. O endpoint `/api/auth/me` respondeu HTTP 401 sem token, como esperado. A URL `https://loveall-api.onrender.com/api/` foi registrada em `gradle.properties` para o Android Studio e builds debug/release. A compilação do APK debug, a compilação dos testes instrumentados e os 142 testes JVM passaram. O `BuildConfig` gerado confirma o endereço cloud e anúncios/assinaturas desativados.
+
+Estas verificações não criaram contas nem alteraram dados de produção. Login, cadastro, fotos, mensagens e persistência no ambiente cloud permanecem pendentes de teste com contas apropriadas. Contas do SQLite local não foram migradas para o PostgreSQL. Assinatura de distribuição e registros/homologação de monetização continuam pendentes.

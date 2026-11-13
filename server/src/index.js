@@ -8,6 +8,7 @@ import { createServer } from 'http';
 import db from './database.js';
 import { photoFilename } from './services/photo-store.js';
 import { proxyHops } from './config/proxy.js';
+import { createAppAdsRouter } from './routes/app-ads.js';
 
 import authRoutes from './routes/auth.js';
 import profileRoutes from './routes/profiles.js';
@@ -94,6 +95,7 @@ app.use((req, res, next) => {
 });
 
 // ===================== API ROUTES =====================
+app.use(createAppAdsRouter(process.env.ADMOB_PUBLISHER_ID || ''));
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/profiles', profileRoutes);
 app.use('/api/profiles', photoRoutes);

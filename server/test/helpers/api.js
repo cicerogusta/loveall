@@ -17,7 +17,7 @@ export async function startApi(t, overrides = {}) {
   const child = spawn(process.execPath, ['src/index.js'], {
     cwd: fileURLToPath(new URL('../../', import.meta.url)),
     env: { ...process.env, NODE_ENV: 'development', PORT: String(port),
-      DATABASE_URL: '', PHOTO_STORAGE: 'local', RENDER: '', PLAY_BILLING_ENABLED: 'false',
+      DATABASE_URL: '', PHOTO_STORAGE: 'local', RENDER: '', PLAY_BILLING_ENABLED: 'false', ADMOB_PUBLISHER_ID: '',
       JWT_SECRET: randomBytes(48).toString('hex'), DB_PATH: database,
       PHOTO_UPLOAD_DIR: path.join(directory, 'photos'), ...overrides }, stdio: 'ignore',
   });

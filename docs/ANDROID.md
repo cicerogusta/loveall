@@ -6,11 +6,11 @@ Aplicativo Android escrito em Kotlin e Jetpack Compose. Abra **a raiz do reposit
 
 Requisitos: JDK 17, SDK Android 36 e acesso aos repositórios Google/Maven Central. O Gradle Wrapper 8.13 está incluído com checksum SHA-256. Versões estão em `gradle/libs.versions.toml`; AGP 8.13.2 e Kotlin/Compose Compiler 2.3.0. A BOM Compose 2025.09.01 é uma base estável fixada para esta migração, não uma afirmação de versão mais recente.
 
-1. Inicie o backend existente conforme [COMO-EXECUTAR.md](../COMO-EXECUTAR.md), com dependências e `.env` próprios. A porta padrão real de `server/src/index.js` é **3001**, salvo `PORT` no ambiente. Nenhuma credencial é criada pelo aplicativo.
-2. Inicie um emulador Android. Debug usa `http://10.0.2.2:3001/api/`.
+1. O endereço padrão em `gradle.properties` é `https://loveall-api.onrender.com/api/`. Não é necessário iniciar o backend local para usar a API publicada. Nenhuma credencial é criada pelo aplicativo.
+2. Inicie um emulador ou conecte um dispositivo Android com acesso à internet.
 3. Na raiz do repositório, execute `.\gradlew.bat :app:installDebug` no Windows (Linux/macOS: `bash gradlew :app:installDebug`). O pacote debug é `com.loveall.app.native.debug`.
 
-Para outro endpoint: `bash gradlew :app:assembleDebug -Ploveall.apiBaseUrl=https://seu-host/api/` (Windows: substitua `bash gradlew` por `.\gradlew.bat`). A URL deve terminar em `/`. HTTP é permitido somente em debug, para `10.0.2.2` e `localhost`. Em aparelho físico, use HTTPS ou `adb reverse tcp:3001 tcp:3001` com `-Ploveall.apiBaseUrl=http://localhost:3001/api/`.
+Para outro endpoint: `bash gradlew :app:assembleDebug -Ploveall.apiBaseUrl=https://seu-host/api/` (Windows: substitua `bash gradlew` por `.\gradlew.bat`). A URL deve terminar em `/`. Para desenvolver com a API local, inicie o backend conforme [COMO-EXECUTAR.md](../COMO-EXECUTAR.md) e use `-Ploveall.apiBaseUrl=http://10.0.2.2:3001/api/` no emulador. HTTP é permitido somente em debug, para `10.0.2.2` e `localhost`. Em aparelho físico, use HTTPS ou `adb reverse tcp:3001 tcp:3001` com `-Ploveall.apiBaseUrl=http://localhost:3001/api/`.
 
 ## Verificações
 
@@ -37,7 +37,7 @@ Consulte [ARCHITECTURE.md](ARCHITECTURE.md) para as responsabilidades, limites d
 
 Veja [MIGRATION.md](MIGRATION.md) para o inventário, decisões, riscos herdados e critérios antes da liberação. O cliente anterior foi arquivado em `legacy/web-client/`; ele não integra o build Android nem a imagem Docker da API. A raiz agora contém o projeto Gradle como entrada para o aplicativo. **A reescrita nativa não equivale a liberação para produção.**
 
-Build de release exige uma URL HTTPS explícita: `./gradlew :app:bundleRelease -Ploveall.apiBaseUrl=https://seu-host/api/`. Não há assinatura de produção configurada. O `applicationId` de release mantém `com.loveall.app`, mas versionCode, assinatura, pacote publicado e direitos existentes precisam ser conferidos na Play Console antes de qualquer atualização.
+Build de release exige uma URL HTTPS configurada; `gradle.properties` já fornece a API publicada. Para sobrescrever: `./gradlew :app:bundleRelease -Ploveall.apiBaseUrl=https://seu-host/api/`. Não há assinatura de produção configurada. O `applicationId` de release mantém `com.loveall.app`, mas versionCode, assinatura, pacote publicado e direitos existentes precisam ser conferidos na Play Console antes de qualquer atualização.
 
 Compras e chamadas estão indisponíveis em debug e release. A API também bloqueia essas operações; a consulta do saldo anterior foi preservada. Consulte [a revisão de publicação](REVISAO-PUBLICACAO.md) antes de reativar integrações.
 

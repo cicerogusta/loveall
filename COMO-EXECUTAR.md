@@ -17,7 +17,9 @@ Na raiz, com JDK e SDK configurados:
 
 O APK está em `app/build/outputs/apk/debug/app-debug.apk`. O pacote debug é `com.loveall.app.native.debug`.
 
-## API existente
+O app usa por padrão `https://loveall-api.onrender.com/api/`, configurado em `gradle.properties`, tanto no emulador quanto no celular. Não é necessário executar Node.js localmente para acessar essa API. Após inatividade, o servidor gratuito pode demorar cerca de um minuto para responder.
+
+## API local para desenvolvimento (opcional)
 
 Somente o servidor continua usando Node.js. Para executá-lo, use suas configurações de ambiente e credenciais autorizadas; os comandos abaixo rodam em outra janela:
 
@@ -36,10 +38,10 @@ Esse script instala as dependências ausentes e cria `server/.env` de desenvolvi
 
 O diretório de execução do servidor é `server/`; configure seu `.env` nesse diretório ou forneça as variáveis no ambiente. Não execute o seed sobre dados de produção.
 
-O Android usa `http://10.0.2.2:3001/api/` no emulador. Para outro servidor:
+Para usar a API local no emulador, sobrescreva o endereço no build:
 
 ```powershell
-.\gradlew.bat :app:assembleDebug -Ploveall.apiBaseUrl=https://seu-host/api/
+.\gradlew.bat :app:assembleDebug '-Ploveall.apiBaseUrl=http://10.0.2.2:3001/api/'
 ```
 
 No dispositivo físico, use uma API HTTPS acessível ou `adb reverse tcp:3001 tcp:3001` e a URL debug `http://localhost:3001/api/`.
