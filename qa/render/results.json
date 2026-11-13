@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-12",
+  "provider": "Render Free + Supabase Free",
+  "deployed": false,
+  "pending": [
+    "Create personal accounts",
+    "Configure Supabase project, private bucket and credentials",
+    "Connect Git repository and deploy Render",
+    "Cloud TLS, proxy, cold-start and persistence verification",
+    "External backup and real billing/ads homologation before commercial launch"
+  ],
+  "api": {
+    "passed": 35,
+    "failed": 0,
+    "postgres_local": "PGlite via pg protocol",
+    "storage": "Official Supabase SDK with simulated HTTP responses",
+    "real_postgres_ci": "Job prepared; not executed remotely"
+  },
+  "android": {
+    "jvm_passed": 142,
+    "jvm_failed": 0,
+    "debug_apk": "assembled",
+    "instrumentation": "not rerun in this change"
+  },
+  "audit_production": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "blueprint": "Validated against official Render JSON schema 2020-12",
+  "docker": "Dockerfile prepared; Docker unavailable locally",
+  "local_data": "No development database or photos migrated/deleted"
+}

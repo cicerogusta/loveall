@@ -1,0 +1,13 @@
+{
+  "user": {
+    "id": "user-alex",
+    "name": "Alex",
+    "email": "alex@example.test",
+    "gender": "non_binary",
+    "photos": [],
+    "looking_for": [
+      "woman"
+    ],
+    "is_verified": 1
+  }
+}

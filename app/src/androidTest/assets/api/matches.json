@@ -1,0 +1,19 @@
+{
+  "matches": [
+    {
+      "match_id": "match-robin",
+      "partner": {
+        "id": "user-robin",
+        "name": "Robin",
+        "age": 28,
+        "gender": "non_binary",
+        "photos": [],
+        "bio": "Café, música e boas conversas.",
+        "city": "São Paulo",
+        "is_verified": 1
+      },
+      "last_message": null,
+      "unread_count": 1
+    }
+  ]
+}

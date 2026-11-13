@@ -1,0 +1,61 @@
+name: loveall-oracle
+
+services:
+  api:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: production
+      PORT: '3001'
+      JWT_SECRET: ${JWT_SECRET:?Execute prepare.sh para criar o segredo}
+      CORS_ORIGINS: https://${API_HOST:?Informe o hostname da API}
+      TRUST_PROXY_HOPS: '1'
+      PLAY_BILLING_ENABLED: ${PLAY_BILLING_ENABLED:-false}
+      PLAY_PACKAGE_NAME: ${PLAY_PACKAGE_NAME:-com.loveall.app}
+      PLAY_AD_FREE_PRODUCT_IDS: ${PLAY_AD_FREE_PRODUCT_IDS:-}
+      PLAY_TOKEN_ENCRYPTION_KEY: ${PLAY_TOKEN_ENCRYPTION_KEY:-}
+      PLAY_RTDN_AUDIENCE: ${PLAY_RTDN_AUDIENCE:-}
+      PLAY_RTDN_SERVICE_ACCOUNT_EMAIL: ${PLAY_RTDN_SERVICE_ACCOUNT_EMAIL:-}
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/play-service-account.json
+      DB_PATH: /data/loveall.db
+      PHOTO_UPLOAD_DIR: /data/photos
+    # A API não publica a porta 3001. Apenas o Caddy recebe conexões externas.
+    volumes:
+      - api_data:/data
+      - ./.secrets:/run/secrets:ro
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: unless-stopped
+    mem_limit: 768m
+    logging:
+      driver: json-file
+      options: { max-size: '10m', max-file: '3' }
+
+  caddy:
+    image: caddy:2-alpine
+    environment:
+      API_HOST: ${API_HOST:?Informe o hostname da API}
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    mem_limit: 128m
+    logging:
+      driver: json-file
+      options: { max-size: '10m', max-file: '3' }
+
+volumes:
+  api_data:
+  caddy_data:
+  caddy_config:

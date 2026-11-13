@@ -1,0 +1,11 @@
+{
+  "date": "2026-11-12",
+  "jvm": { "tests": 124, "failures": 0, "errors": 0 },
+  "instrumentation": { "tests": 21, "passed": true },
+  "api": { "tests": 9, "failures": 0, "database": "isolated temporary databases" },
+  "npm_audit_production": { "total": 0 },
+  "lint_debug": { "errors": 0, "warnings": 24 },
+  "lint_release": { "errors": 0, "warnings": 26 },
+  "build": { "release_bundle": true, "production_url_configured": false, "release_signed": false },
+  "local_api": { "final_restart": "blocked_by_automatic_approval_review", "manual_restart_required": true }
+}

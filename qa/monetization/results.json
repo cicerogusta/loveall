@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-12",
+  "product": "Ad-free subscription via Google Play",
+  "jvm": {
+    "tests": 142,
+    "failures": 0,
+    "errors": 0
+  },
+  "instrumentation": {
+    "passed": true,
+    "tests": 26
+  },
+  "api": {
+    "tests": 28,
+    "failures": 0,
+    "provider": "simulated Google Play resources and isolated databases"
+  },
+  "npm_audit": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "release": {
+    "r8_bundle_build_passed": true,
+    "real_accounts_configured": false,
+    "monetization_enabled": false,
+    "signed": false,
+    "api_url": "compile-only .invalid placeholder"
+  },
+  "release_guard_without_admob_ids": "rejected as expected",
+  "live_purchase_ad_and_rtdn_tests": "pending user registrations and real configuration",
+  "screen_capture": "ad-free-offer.png; synthetic test offer and price",
+  "lint_debug": {
+    "Error": 0,
+    "Warning": 24
+  },
+  "lint_release": {
+    "Error": 0,
+    "Warning": 26
+  }
+}

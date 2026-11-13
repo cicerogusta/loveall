@@ -6,13 +6,13 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3001
-      - JWT_SECRET=${JWT_SECRET:-MUDE_ESTA_CHAVE_EM_PRODUCAO}
+      - JWT_SECRET=${JWT_SECRET:?Configure um segredo exclusivo de pelo menos 32 caracteres}
       - CORS_ORIGINS=${CORS_ORIGINS:-https://seudominio.com}
     volumes:
       - loveall-data:/app/server/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:3001/api/health"]
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 30s
       timeout: 5s
       retries: 3

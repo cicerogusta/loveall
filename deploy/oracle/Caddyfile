@@ -1,0 +1,8 @@
+{$API_HOST} {
+    encode zstd gzip
+    reverse_proxy api:3001 {
+        # Descarta endereços e protocolo informados por clientes externos.
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+    }
+}

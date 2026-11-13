@@ -1,0 +1,89 @@
+name: API - seguranca e contratos
+
+on:
+  pull_request:
+    paths: ['server/**', 'Dockerfile', 'deploy/oracle/**', 'deploy/render/**', 'render.yaml', '.github/workflows/server.yml']
+  push:
+    paths: ['server/**', 'Dockerfile', 'deploy/oracle/**', 'deploy/render/**', 'render.yaml', '.github/workflows/server.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm audit --omit=dev --audit-level=moderate
+
+  container:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validar scripts e Compose
+        shell: bash
+        env:
+          API_HOST: api.example.test
+        run: |
+          export JWT_SECRET="$(openssl rand -hex 48)"
+          for script in deploy/oracle/*.sh; do bash -n "$script"; done
+          docker compose -f deploy/oracle/compose.yaml config --quiet
+      - name: Compilar imagem da API
+        run: docker build -t loveall-api-ci .
+      - name: Verificar inicializacao e persistencia do volume
+        shell: bash
+        run: |
+          export JWT_SECRET="$(openssl rand -hex 48)"
+          docker run -d --read-only --tmpfs /tmp:size=128m,mode=1777 --cap-drop ALL --security-opt no-new-privileges:true --memory 768m --name loveall-api-ci -e JWT_SECRET -e DB_PATH=/data/loveall.db -e PHOTO_UPLOAD_DIR=/data/photos -v loveall-api-ci-data:/data loveall-api-ci
+          for attempt in $(seq 1 30); do
+            state="$(docker inspect --format '{{.State.Health.Status}}' loveall-api-ci)"
+            if [ "$state" = healthy ]; then break; fi
+            sleep 2
+          done
+          test "$(docker inspect --format '{{.State.Health.Status}}' loveall-api-ci)" = healthy
+          docker exec loveall-api-ci node -e "const fs=require('fs'); fs.accessSync('/data/loveall.db'); fs.writeFileSync('/data/persistence-check','ok')"
+          docker restart loveall-api-ci
+          docker exec loveall-api-ci node -e "if(require('fs').readFileSync('/data/persistence-check','utf8')!=='ok') process.exit(1)"
+      - name: Validar configuracao Caddy
+        run: docker run --rm -e API_HOST=api.example.test -v "$PWD/deploy/oracle/Caddyfile:/etc/caddy/Caddyfile:ro" caddy:2-alpine caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+
+  postgres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      database:
+        image: postgres:16
+        env:
+          POSTGRES_USER: loveall_test
+          POSTGRES_PASSWORD: disposable-ci-only
+          POSTGRES_DB: loveall_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 10s
+          --health-timeout 5s --health-retries 5
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+      - run: node --test test/postgres.test.js
+        env:
+          TEST_POSTGRES_URL: postgresql://loveall_test:disposable-ci-only@127.0.0.1:5432/loveall_test

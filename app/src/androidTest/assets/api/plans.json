@@ -1,0 +1,9 @@
+{
+  "plans": {
+    "basic": {
+      "name": "Básico",
+      "price": 9.9,
+      "minutes": 60
+    }
+  }
+}

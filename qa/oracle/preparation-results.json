@@ -1,0 +1,13 @@
+{
+  "date": "2026-11-12",
+  "provider": "Oracle Cloud Always Free",
+  "api_tests": 11,
+  "api_test_failures": 0,
+  "bash_syntax": "passed",
+  "prepare_script": "invalid input, secret creation and overwrite protection passed",
+  "package": "qa/oracle/loveall-api.tar.gz",
+  "package_contains_secrets_or_user_data": false,
+  "docker_runtime_validation": "pending: Docker Engine unavailable locally",
+  "cloud_deployment": "pending: user has not created Oracle account or VM",
+  "hostname": "pending public IP; provisional sslip.io planned"
+}

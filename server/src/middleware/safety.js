@@ -1,9 +1,17 @@
 import db from '../database.js';
 
 const BANNED_WORDS = [
-  'pix', 'whatsapp', 'wpp', 'zap', 'telegram',
-  'conta bancária', 'transferência', 'dinheiro',
-  'nudes', 'sexo oral', 'programa',
+  'pix',
+  'whatsapp',
+  'wpp',
+  'zap',
+  'telegram',
+  'conta bancária',
+  'transferência',
+  'dinheiro',
+  'nudes',
+  'sexo oral',
+  'programa',
 ];
 
 const SPAM_WINDOW_MS = 60000;
@@ -12,7 +20,7 @@ const messageTimestamps = new Map();
 
 export function contentFilter(req, res, next) {
   const { content } = req.body;
-  if (!content) return next();
+  if (typeof content !== 'string') return res.status(400).json({ error: 'Mensagem inválida.' });
 
   const lower = content.toLowerCase();
 
@@ -20,7 +28,8 @@ export function contentFilter(req, res, next) {
     if (lower.includes(word)) {
       return res.status(400).json({
         error: 'Mensagem bloqueada',
-        detail: 'Sua mensagem contém conteúdo não permitido. Por segurança, não compartilhe dados pessoais ou financeiros pelo chat.'
+        detail:
+          'Sua mensagem contém conteúdo não permitido. Por segurança, não compartilhe dados pessoais ou financeiros pelo chat.',
       });
     }
   }
@@ -34,12 +43,12 @@ export function rateLimiter(req, res, next) {
 
   const now = Date.now();
   const timestamps = messageTimestamps.get(userId) || [];
-  const recent = timestamps.filter(t => now - t < SPAM_WINDOW_MS);
+  const recent = timestamps.filter((t) => now - t < SPAM_WINDOW_MS);
 
   if (recent.length >= MAX_MESSAGES_PER_MINUTE) {
     return res.status(429).json({
       error: 'Muitas mensagens',
-      detail: 'Você está enviando mensagens rápido demais. Aguarde um momento.'
+      detail: 'Você está enviando mensagens rápido demais. Aguarde um momento.',
     });
   }
 
@@ -48,15 +57,18 @@ export function rateLimiter(req, res, next) {
   next();
 }
 
-export function checkBlocked(req, res, next) {
+export async function checkBlocked(req, res, next) {
   const userId = req.user?.id;
-  const targetId = req.params.userId || req.body.to_user || req.body.receiver_id;
+  const targetId = req.params.userId || req.body?.to_user || req.body?.receiver_id;
 
   if (!userId || !targetId) return next();
+  if (typeof targetId !== 'string') return res.status(400).json({ error: 'Perfil inválido.' });
 
-  const block = db.prepare(
-    'SELECT id FROM blocks WHERE (blocker_id = ? AND blocked_id = ?) OR (blocker_id = ? AND blocked_id = ?)'
-  ).get(userId, targetId, targetId, userId);
+  const block = await db
+    .prepare(
+      'SELECT id FROM blocks WHERE (blocker_id = ? AND blocked_id = ?) OR (blocker_id = ? AND blocked_id = ?)'
+    )
+    .get(userId, targetId, targetId, userId);
 
   if (block) {
     return res.status(403).json({ error: 'Interação bloqueada' });

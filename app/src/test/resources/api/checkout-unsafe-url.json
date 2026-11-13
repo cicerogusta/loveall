@@ -1,0 +1,4 @@
+{
+  "transaction_id": "tx1",
+  "payment_url": "http://checkout.example.test"
+}

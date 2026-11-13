@@ -1,0 +1,7 @@
+{
+  "subscription": {
+    "plan": "plus",
+    "call_minutes_remaining": 123,
+    "payment_status": "approved"
+  }
+}

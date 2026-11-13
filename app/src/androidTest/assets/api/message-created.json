@@ -1,0 +1,9 @@
+{
+  "message": {
+    "id": "m2",
+    "sender_id": "user-alex",
+    "content": "Olá, Robin!",
+    "created_at": "2026-11-12 12:01:00",
+    "is_read": 0
+  }
+}

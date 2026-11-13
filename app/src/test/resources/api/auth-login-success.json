@@ -1,0 +1,9 @@
+{
+  "token": "test-session-token",
+  "user": {
+    "id": "user-alex",
+    "name": "Alex",
+    "email": "alex@example.test",
+    "is_verified": 1
+  }
+}

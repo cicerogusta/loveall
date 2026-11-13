@@ -5,12 +5,9 @@ import helmet from 'helmet';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import { createServer } from 'http';
-import { Server } from 'socket.io';
-import jwt from 'jsonwebtoken';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
 import db from './database.js';
+import { photoFilename } from './services/photo-store.js';
+import { proxyHops } from './config/proxy.js';
 
 import authRoutes from './routes/auth.js';
 import profileRoutes from './routes/profiles.js';
@@ -19,28 +16,33 @@ import matchRoutes from './routes/matches.js';
 import messageRoutes from './routes/messages.js';
 import safetyRoutes from './routes/safety.js';
 import callRoutes from './routes/calls.js';
+import billingRoutes from './routes/billing.js';
+import photoRoutes from './routes/photos.js';
+import { photoStore, maintainPhotos } from './services/photo-storage.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isProduction = process.env.NODE_ENV === 'production';
 
 const app = express();
+app.set('trust proxy', proxyHops(process.env.TRUST_PROXY_HOPS));
 
 const server = createServer(app);
 
 // ===================== SEGURANCA =====================
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "https:", "blob:"],
-      connectSrc: ["'self'", "ws:", "wss:"],
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+        fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+        imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
+        connectSrc: ["'self'", 'ws:', 'wss:'],
+      },
     },
-  },
-  crossOriginEmbedderPolicy: false,
-}));
+    crossOriginEmbedderPolicy: false,
+  })
+);
 
 app.use(compression());
 
@@ -49,10 +51,12 @@ const allowedOrigins = process.env.CORS_ORIGINS
   ? process.env.CORS_ORIGINS.split(',')
   : ['http://localhost:5173', 'http://localhost:3001'];
 
-app.use(cors({
-  origin: isProduction ? allowedOrigins : '*',
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: isProduction ? allowedOrigins : '*',
+    credentials: true,
+  })
+);
 
 // Rate limit global - 100 req/min por IP
 const globalLimiter = rateLimit({
@@ -71,37 +75,58 @@ const authLimiter = rateLimit({
   message: { error: 'Muitas tentativas de login. Tente novamente em 15 minutos.' },
 });
 
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '64kb' }));
+app.use((req, res, next) => {
+  if (req.is('application/json') && (!req.body || typeof req.body !== 'object' || Array.isArray(req.body))) {
+    return res.status(400).json({ error: 'Envie um objeto JSON válido.' });
+  }
+  next();
+});
 
 // Log de requisições para debug
 app.use((req, res, next) => {
   const originalJson = res.json;
-  res.json = function(data) {
+  res.json = function (data) {
     console.log(`[${req.method}] ${req.path} -> ${res.statusCode}`);
     return originalJson.call(this, data);
   };
   next();
 });
 
-// ===================== SOCKET.IO =====================
-const io = new Server(server, {
-  cors: {
-    origin: isProduction ? allowedOrigins : '*',
-    methods: ['GET', 'POST'],
-    credentials: true,
-  }
-});
-
 // ===================== API ROUTES =====================
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/profiles', profileRoutes);
+app.use('/api/profiles', photoRoutes);
+app.get('/api/photos/:filename', async (req, res) => {
+  const reference = `/api/photos/${req.params.filename}`;
+  const filename = photoFilename(reference);
+  if (!filename) return res.status(404).end();
+  const visible = await db
+    .prepare(
+      `SELECT 1 FROM uploaded_photos p JOIN users u ON p.user_id = u.id
+    WHERE p.reference = ? AND p.ready = 1 AND p.pending_delete = 0 AND u.is_active = 1 AND u.is_banned = 0`
+    )
+    .get(reference);
+  if (!visible) return res.status(404).end();
+  const bytes = await photoStore.get(filename);
+  if (!bytes) return res.status(404).end();
+  res
+    .set({ 'Cache-Control': 'no-store', 'Content-Type': 'image/jpeg', 'X-Content-Type-Options': 'nosniff' })
+    .send(bytes);
+});
 app.use('/api/likes', likeRoutes);
 app.use('/api/matches', matchRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/safety', safetyRoutes);
 app.use('/api/calls', callRoutes);
+app.use('/api/billing', billingRoutes);
 
-app.get('/api/health', (req, res) => {
+app.get('/api/health', async (req, res) => {
+  try {
+    await db.prepare('SELECT 1').get();
+  } catch {
+    return res.status(503).json({ status: 'unavailable' });
+  }
   res.json({
     status: 'ok',
     app: 'LoveAll',
@@ -111,123 +136,39 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// ===================== SERVIR FRONTEND EM PRODUCAO =====================
-const clientDist = path.resolve(__dirname, '..', '..', 'client', 'dist');
-const indexHtml = path.join(clientDist, 'index.html');
-
-if (fs.existsSync(clientDist)) {
-  app.use(express.static(clientDist, {
-    maxAge: isProduction ? '7d' : 0,
-    etag: true,
-  }));
-
-  // SPA fallback - todas as rotas nao-API servem o index.html
-  app.get('*', (req, res) => {
-    if (req.path.startsWith('/api/') || req.path.startsWith('/socket.io/')) {
-      return res.status(404).json({ error: 'Endpoint nao encontrado' });
-    }
-    res.sendFile(indexHtml);
-  });
-} else {
-  console.log('Frontend dist nao encontrado em:', clientDist);
-  console.log('Rode "cd client && npm run build" para gerar o frontend.');
-}
-
-// ===================== SOCKET.IO REALTIME =====================
-const onlineUsers = new Map();
-
-io.use((socket, next) => {
-  const token = socket.handshake.auth.token;
-  if (!token) return next(new Error('Token necessario'));
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    socket.userId = decoded.id;
-    next();
-  } catch {
-    next(new Error('Token invalido'));
-  }
+// O Android usa REST; os eventos Socket.IO do cliente legado não são expostos.
+app.use((error, _req, res, _next) => {
+  if (error.type === 'entity.too.large') return res.status(413).json({ error: 'Requisição muito grande.' });
+  if (error instanceof SyntaxError && error.status === 400)
+    return res.status(400).json({ error: 'JSON inválido.' });
+  console.error('[API] Falha interna:', error.name);
+  res.status(500).json({ error: 'Não foi possível concluir a operação.' });
 });
-
-io.on('connection', (socket) => {
-  onlineUsers.set(socket.userId, socket.id);
-
-  socket.on('go-online', () => {
-    const matches = db.prepare(`
-      SELECT CASE WHEN user1 = ? THEN user2 ELSE user1 END as partner_id
-      FROM matches WHERE (user1 = ? OR user2 = ?) AND is_active = 1
-    `).all(socket.userId, socket.userId, socket.userId);
-
-    matches.forEach(m => {
-      const partnerSocket = onlineUsers.get(m.partner_id);
-      if (partnerSocket) {
-        io.to(partnerSocket).emit('user-online', { userId: socket.userId });
-      }
-    });
-  });
-
-  socket.on('send-message', (data) => {
-    const receiverSocket = onlineUsers.get(data.receiverId);
-    if (receiverSocket) {
-      io.to(receiverSocket).emit('new-message', {
-        matchId: data.matchId,
-        senderId: socket.userId,
-        content: data.content,
-        msgType: data.msgType || 'text',
-        createdAt: new Date().toISOString()
-      });
-    }
-  });
-
-  socket.on('new-match', (data) => {
-    const receiverSocket = onlineUsers.get(data.partnerId);
-    if (receiverSocket) {
-      io.to(receiverSocket).emit('match-notification', {
-        matchId: data.matchId,
-        userId: socket.userId
-      });
-    }
-  });
-
-  socket.on('typing', (data) => {
-    const receiverSocket = onlineUsers.get(data.receiverId);
-    if (receiverSocket) {
-      io.to(receiverSocket).emit('user-typing', {
-        matchId: data.matchId,
-        userId: socket.userId
-      });
-    }
-  });
-
-  socket.on('call-request', (data) => {
-    const receiverSocket = onlineUsers.get(data.receiverId);
-    if (receiverSocket) {
-      io.to(receiverSocket).emit('incoming-call', {
-        callerId: socket.userId,
-        callerName: data.callerName,
-        callType: data.callType,
-        matchId: data.matchId
-      });
-    }
-  });
-
-  socket.on('call-response', (data) => {
-    const callerSocket = onlineUsers.get(data.callerId);
-    if (callerSocket) {
-      io.to(callerSocket).emit('call-answered', {
-        accepted: data.accepted,
-        receiverId: socket.userId
-      });
-    }
-  });
-
-  socket.on('disconnect', () => {
-    onlineUsers.delete(socket.userId);
-  });
-});
+await maintainPhotos();
+const photoMaintenance = setInterval(
+  () => {
+    maintainPhotos().catch(() => console.error('[Photos] Manutenção indisponível.'));
+  },
+  60 * 60 * 1000
+);
+photoMaintenance.unref();
 
 // ===================== START =====================
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`LoveAll Server [${isProduction ? 'PRODUCTION' : 'DEV'}] rodando na porta ${PORT}`);
 });
+
+let closing = false;
+async function shutdown() {
+  if (closing) return;
+  closing = true;
+  clearInterval(photoMaintenance);
+  server.close(async () => {
+    await db.close();
+    process.exit(0);
+  });
+  setTimeout(() => process.exit(1), 30_000).unref();
+}
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);

@@ -1,21 +1,30 @@
-# Deploy no Render.com
-# 1. Conecte seu repo GitHub
-# 2. O Render detecta automaticamente este arquivo
+# API gratuita para homologação. Banco/fotos ficam fora do disco efêmero.
 services:
   - type: web
-    name: loveall
-    runtime: node
+    name: loveall-api
+    runtime: docker
     plan: free
-    buildCommand: cd client && npm install && npm run build && cd ../server && npm install
-    startCommand: cd server && node src/index.js
+    region: virginia
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    autoDeployTrigger: off
     envVars:
       - key: NODE_ENV
         value: production
       - key: JWT_SECRET
         generateValue: true
-      - key: CORS_ORIGINS
+      - key: TRUST_PROXY_HOPS
+        value: "1"
+      - key: DATABASE_URL
         sync: false
-    disk:
-      name: loveall-data
-      mountPath: /opt/render/project/src/server/data
-      sizeGB: 1
+      - key: PHOTO_STORAGE
+        value: supabase
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_PHOTO_BUCKET
+        value: loveall-photos
+      - key: PLAY_BILLING_ENABLED
+        value: "false"
