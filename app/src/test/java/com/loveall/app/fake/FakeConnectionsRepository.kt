@@ -11,6 +11,8 @@ import org.junit.Assert.*
 
 internal class FakeConnectionsRepository : ConnectionsRepository {
     var unexpectedFailure = false
+    var failUnmatch = false
+    var unmatchCalls = 0
     var failLike = false
     var likeCalls = 0
 
@@ -28,7 +30,10 @@ internal class FakeConnectionsRepository : ConnectionsRepository {
     override suspend fun matches() =
         listOf(Match(TestConversations.MATCH_ID, TestFixtures.profile, null, 0))
 
-    override suspend fun unmatch(id: String) {}
+    override suspend fun unmatch(id: String) {
+        unmatchCalls++
+        if (failUnmatch) throw AuthException(AuthError.NETWORK)
+    }
 }
 
 private const val MALFORMED_MATCH_MESSAGE = "Malformed match"

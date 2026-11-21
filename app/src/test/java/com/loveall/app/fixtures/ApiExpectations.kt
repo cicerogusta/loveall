@@ -5,7 +5,7 @@ internal object ApiExpectations {
     const val CURRENT_ACCOUNT_PATH = "/api/auth/me"
     const val TERMS_PATH = "/api/auth/terms"
     const val TERMS_FIELD = "terms_version"
-    const val TERMS_VERSION = "2026-11-12"
+    const val TERMS_VERSION = "2026-11-20"
     const val PAYMENT_STATUS_PATH = "/api/calls/payment-status/tx-one"
     const val GET_METHOD = "GET"
     const val API_ROOT = "/api/"

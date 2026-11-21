@@ -1,0 +1,83 @@
+{
+  "date": "2026-11-20",
+  "package": "com.loveall.app",
+  "version_name": "1.0.0",
+  "version_code": 1,
+  "target_sdk": 36,
+  "min_sdk": 26,
+  "jvm": {
+    "tests": 155,
+    "failures": 0
+  },
+  "instrumentation": {
+    "tests": 26,
+    "failures": 0,
+    "device": "Medium Phone API 37",
+    "initial_timeout": "One login timeout on first full run; isolated scenario and two subsequent full runs passed"
+  },
+  "api": {
+    "tests": 43,
+    "failures": 0,
+    "production_data_modified": false
+  },
+  "business_line_coverage": {
+    "covered": 78,
+    "missed": 0,
+    "scope": "Rules, Registration and ProfileEdit only"
+  },
+  "signed_aab": {
+    "path": "app\\build\\outputs\\bundle\\release\\app-release.aab",
+    "sha256": "30b3a31b1b392263577e8caefe2ba00fd07a4a4bfb823c5a52334356eb97510d",
+    "jarsigner_verify_exit": 0,
+    "minified": true
+  },
+  "native_libraries": [
+    {
+      "library": "base/lib/arm64-v8a/libandroidx.graphics.path.so",
+      "alignments": [
+        16384,
+        16384,
+        16384
+      ],
+      "elf_16kb": true
+    },
+    {
+      "library": "base/lib/x86_64/libandroidx.graphics.path.so",
+      "alignments": [
+        16384,
+        16384,
+        16384
+      ],
+      "elf_16kb": true
+    }
+  ],
+  "audit_production": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "live_api_check": {
+    "result": "No response within 95 seconds",
+    "paths": [
+      "/api/health",
+      "/privacy",
+      "/child-safety",
+      "/delete-account",
+      "/app-ads.txt"
+    ],
+    "status_confirmation": "Awaiting user Render/Supabase status"
+  },
+  "external_steps": [
+    "Restore/confirm public API availability",
+    "Deploy updated API and legal pages before updated app",
+    "Create recoverable off-machine upload key backup",
+    "Configure Play Console, app signing, audience restrictions and Data safety",
+    "Complete AdMob privacy messaging and readiness review",
+    "Required closed testing and pre-launch review",
+    "Finalize store artwork/screenshots and operator moderation/backup procedures"
+  ],
+  "backup_export_review": "Automatic approval review rejected encrypted export/roundtrip command: blocked by policy; no export performed; key and DPAPI credential preserved locally"
+}

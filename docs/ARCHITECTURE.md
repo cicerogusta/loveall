@@ -48,3 +48,16 @@ Textos apresentados às pessoas ficam nos recursos Android (`strings.xml` e plur
 Os testes de ViewModel são separados por funcionalidade, usam fakes em arquivos próprios e `MainDispatcherRule` para restaurar `Dispatchers.Main` mesmo após falha. Cenários de validação e pagamento são parametrizados com nomes individuais; os casos usam Arrange/Act/Assert e `runTest`, sem esperas reais. Dados recorrentes são organizados por contexto em fixtures. Respostas HTTP ficam em JSON em `src/test/resources/api` e `src/androidTest/assets/api`; as expectativas de protocolo são independentes das constantes de produção, para detectar alterações acidentais do contrato. A simulação HTTP dos testes de navegação fica em `NativeApiDispatcher`, separada das interações de UI.
 
 `StringDeclarationTest` faz uma verificação leve dos fontes Kotlin de produção e aponta literais fora de declarações de constantes e entradas de enum. O teste complementa o lint e a revisão dos recursos; não é um parser completo de Kotlin nem uma exigência de traduzir chaves técnicas da API.
+
+
+## Revisão de release — 20/11/2026
+
+`Rules` centraliza validações de senha (inclusive limite UTF-8 do bcrypt), identidade e preferências, usadas por `Registration` e `ProfileEdit`. A API aplica os mesmos limites no cadastro e na edição, e fixtures cobrem fronteiras e duplicatas.
+
+`ChatViewModel.moderate` e `ExploreViewModel.removeProfile` concentram somente o ciclo de estado comum às ações daquela tela; as operações continuam injetadas por contratos. Não há superclasse de ViewModel nem serviço genérico alterando StateFlow alheio. Moderação só fecha a conversa após resposta confirmada; falha permite nova tentativa.
+
+`KeystoreSessionStore.access` serializa as operações no armazenamento seguro com Mutex e dispatcher IO. Formulários, feedback e seletores/rótulos de identidade foram separados em arquivos específicos, preservando callbacks e recursos de texto.
+
+As páginas públicas da API separam conteúdo/renderização (`public/pages.js`) das rotas e validações HTTP (`routes/public-pages.js`). O formulário de exclusão reutiliza o serviço transacional existente em vez de duplicar o apagamento de dependências.
+
+A assinatura de upload é responsabilidade do build e scripts locais, sem credenciais no código Android ou no AppContainer. Consulte [a revisão de publicação](REVISAO-PUBLICACAO.md) para etapas externas, URLs e limites de validação.

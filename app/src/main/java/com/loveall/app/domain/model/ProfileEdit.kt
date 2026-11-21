@@ -22,14 +22,15 @@ data class ProfileEdit(
     fun isValid() =
         Rules.validName(name) &&
             bio.length <= Rules.MAX_BIO_LENGTH &&
+            city.length <= Rules.MAX_CITY_LENGTH &&
             photos.size <= Rules.MAX_PHOTOS &&
+            photos.distinct().size == photos.size &&
             photos.all(Rules::validProfilePhoto) &&
             ageMin in Rules.MIN_AGE..Rules.DEFAULT_MAX_AGE &&
             ageMax in ageMin..Rules.DEFAULT_MAX_AGE &&
             maxDistance in Rules.MIN_DISTANCE..Rules.MAX_DISTANCE &&
-            Gender.entries.any { it.wire == gender } &&
-            (gender != Gender.OTHER.wire || genderCustom.isNotBlank()) &&
-            lookingFor.all { value -> Gender.entries.any { it.wire == value } }
+            Rules.validIdentity(gender, genderCustom) &&
+            Rules.validPreferences(lookingFor)
 
     companion object {
         fun from(user: User) =

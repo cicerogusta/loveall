@@ -10,47 +10,52 @@ import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
 class KeystoreSessionStore(context: Context, private val io: CoroutineDispatcher) : SessionStore {
+    private val mutex = Mutex()
     private val preferences = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
 
-    override suspend fun read(): String? =
-        withContext(io) {
-            val encoded = preferences.getString(TOKEN, null) ?: return@withContext null
-            try {
-                val parts = encoded.split(SEPARATOR)
-                require(parts.size == 2)
-                val cipher = Cipher.getInstance(TRANSFORMATION)
-                cipher.init(
-                    Cipher.DECRYPT_MODE,
-                    key(),
-                    GCMParameterSpec(TAG_BITS, decode(parts[0])),
-                )
-                cipher.doFinal(decode(parts[1])).toString(Charsets.UTF_8)
-            } catch (error: java.security.GeneralSecurityException) {
-                // Restored ciphertext or an invalidated key cannot be reused: require login.
-                check(preferences.edit().clear().commit())
-                null
-            } catch (error: IllegalArgumentException) {
-                check(preferences.edit().clear().commit())
-                null
-            }
-        }
-
-    override suspend fun write(token: String) =
-        withContext(io) {
+    override suspend fun read(): String? = access {
+        val encoded = preferences.getString(TOKEN, null) ?: return@access null
+        try {
+            val parts = encoded.split(SEPARATOR)
+            require(parts.size == 2)
             val cipher = Cipher.getInstance(TRANSFORMATION)
-            cipher.init(Cipher.ENCRYPT_MODE, key())
-            val ciphertext = cipher.doFinal(token.toByteArray(Charsets.UTF_8))
-            val encoded = encode(cipher.iv) + SEPARATOR + encode(ciphertext)
-            check(preferences.edit().putString(TOKEN, encoded).commit())
-        }
-
-    override suspend fun clear() =
-        withContext(io) {
+            cipher.init(
+                Cipher.DECRYPT_MODE,
+                key(),
+                GCMParameterSpec(TAG_BITS, decode(parts[0])),
+            )
+            cipher.doFinal(decode(parts[1])).toString(Charsets.UTF_8)
+        } catch (error: java.security.GeneralSecurityException) {
+            // Restored ciphertext or an invalidated key cannot be reused: require login.
             check(preferences.edit().clear().commit())
+            null
+        } catch (error: IllegalArgumentException) {
+            check(preferences.edit().clear().commit())
+            null
         }
+    }
+
+    override suspend fun write(token: String) = access {
+        val cipher = Cipher.getInstance(TRANSFORMATION)
+        cipher.init(Cipher.ENCRYPT_MODE, key())
+        val ciphertext = cipher.doFinal(token.toByteArray(Charsets.UTF_8))
+        val encoded = encode(cipher.iv) + SEPARATOR + encode(ciphertext)
+        check(preferences.edit().putString(TOKEN, encoded).commit())
+    }
+
+    override suspend fun clear() = access {
+        check(preferences.edit().clear().commit())
+    }
+
+    // Uma leitura de cifra antiga não pode limpar um token gravado concorrentemente.
+    // A mesma exclusão mútua também protege a geração inicial da chave Keystore.
+    private suspend fun <T> access(operation: () -> T): T =
+        withContext(io) { mutex.withLock { operation() } }
 
     private fun key(): SecretKey {
         val store = KeyStore.getInstance(PROVIDER).apply { load(null) }

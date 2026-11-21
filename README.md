@@ -4,7 +4,7 @@ O aplicativo é **Android nativo, com código Kotlin e interface Jetpack Compose
 
 Para entender a implementação, leia o [guia explicativo do código](GUIA-DO-CODIGO.md), com a estrutura, os fluxos principais e orientações de manutenção.
 
-**Publicação:** consulte a [revisão para a Google Play](docs/REVISAO-PUBLICACAO.md). Os ajustes de segurança e exclusão de conta estão documentados; infraestrutura, contatos responsáveis e configuração da loja ficam para a etapa final.
+**Publicação:** consulte a [revisão para a Google Play](docs/REVISAO-PUBLICACAO.md), atualizada em 20/11/2026. O preparo inclui chave de upload local, build assinado e páginas de suporte/exclusão. Publicar as páginas na API, fazer backup recuperável da chave e concluir os registros/testes da loja ainda são necessários.
 
 **API gratuita:** publicada em `https://loveall-api.onrender.com/api/`, com PostgreSQL e fotos em bucket privado no Supabase. O Android usa esse endereço por padrão. Veja o [guia Render + Supabase](docs/RENDER-SUPABASE.md) para configuração e limites do plano gratuito; a homologação dos fluxos com usuários reais continua pendente.
 

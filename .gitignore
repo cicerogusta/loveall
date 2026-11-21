@@ -18,5 +18,6 @@ deploy/oracle/backups/
 qa/oracle/*.tar.gz
 
 .secrets/
+*.signing.xml
 **/monetization.properties
 qa/render/*.tar.gz

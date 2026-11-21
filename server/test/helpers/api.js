@@ -17,7 +17,7 @@ export async function startApi(t, overrides = {}) {
   const child = spawn(process.execPath, ['src/index.js'], {
     cwd: fileURLToPath(new URL('../../', import.meta.url)),
     env: { ...process.env, NODE_ENV: 'development', PORT: String(port),
-      DATABASE_URL: '', PHOTO_STORAGE: 'local', RENDER: '', PLAY_BILLING_ENABLED: 'false', ADMOB_PUBLISHER_ID: '',
+      PUBLIC_SITE_URL: `http://127.0.0.1:${port}`, DATABASE_URL: '', PHOTO_STORAGE: 'local', RENDER: '', PLAY_BILLING_ENABLED: 'false', ADMOB_PUBLISHER_ID: '',
       JWT_SECRET: randomBytes(48).toString('hex'), DB_PATH: database,
       PHOTO_UPLOAD_DIR: path.join(directory, 'photos'), ...overrides }, stdio: 'ignore',
   });
@@ -45,4 +45,4 @@ export async function startApi(t, overrides = {}) {
 
 export const password = 'SecurityTestPassword42';
 export const registration = (label, extra = {}) => ({ name: `Test ${label}`, email: `${label.toLowerCase()}@example.test`,
-  password, birthdate: '2000-01-01', gender: 'non_binary', looking_for: [], terms_version: '2026-11-12', ...extra });
+  password, birthdate: '2000-01-01', gender: 'non_binary', looking_for: [], terms_version: '2026-11-20', ...extra });

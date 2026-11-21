@@ -1,0 +1,12 @@
+[
+  {
+    "variant": "debug",
+    "errors": 0,
+    "warnings": 25
+  },
+  {
+    "variant": "release",
+    "errors": 0,
+    "warnings": 26
+  }
+]

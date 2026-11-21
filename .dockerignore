@@ -23,4 +23,6 @@ server/test
 .claude
 
 **/.secrets
+.secrets
+**/*.signing.xml
 **/monetization.properties

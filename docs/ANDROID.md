@@ -37,7 +37,7 @@ Consulte [ARCHITECTURE.md](ARCHITECTURE.md) para as responsabilidades, limites d
 
 Veja [MIGRATION.md](MIGRATION.md) para o inventário, decisões, riscos herdados e critérios antes da liberação. O cliente anterior foi arquivado em `legacy/web-client/`; ele não integra o build Android nem a imagem Docker da API. A raiz agora contém o projeto Gradle como entrada para o aplicativo. **A reescrita nativa não equivale a liberação para produção.**
 
-Build de release exige uma URL HTTPS configurada; `gradle.properties` já fornece a API publicada. Para sobrescrever: `./gradlew :app:bundleRelease -Ploveall.apiBaseUrl=https://seu-host/api/`. Não há assinatura de produção configurada. O `applicationId` de release mantém `com.loveall.app`, mas versionCode, assinatura, pacote publicado e direitos existentes precisam ser conferidos na Play Console antes de qualquer atualização.
+Build de release exige uma URL HTTPS configurada; `gradle.properties` já fornece a API publicada. Para sobrescrever: `./gradlew :app:bundleRelease -Ploveall.apiBaseUrl=https://seu-host/api/`. A assinatura de upload local pode ser carregada com `scripts/Build-PlayRelease.ps1`; use esse script para preparar o AAB assinado. O fluxo completo e o backup necessário estão em `REVISAO-PUBLICACAO.md`. O `applicationId` de release mantém `com.loveall.app`, mas versionCode, assinatura, pacote publicado e direitos existentes precisam ser conferidos na Play Console antes de qualquer atualização.
 
 Compras e chamadas estão indisponíveis em debug e release. A API também bloqueia essas operações; a consulta do saldo anterior foi preservada. Consulte [a revisão de publicação](REVISAO-PUBLICACAO.md) antes de reativar integrações.
 

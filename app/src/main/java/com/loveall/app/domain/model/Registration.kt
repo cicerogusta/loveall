@@ -25,14 +25,11 @@ data class Registration(
         return termsAccepted &&
             Rules.validName(name) &&
             EMAIL.matches(email.trim()) &&
-            password.length >= Rules.MIN_PASSWORD_LENGTH &&
-            password.any { it in 'a'..'z' || it in 'A'..'Z' } &&
-            password.any { it in '0'..'9' } &&
+            Rules.validPassword(password) &&
             age in Rules.MIN_AGE..Rules.MAX_AGE &&
             !birth.isAfter(today) &&
-            Gender.entries.any { it.wire == gender } &&
-            (gender != Gender.OTHER.wire || genderCustom.isNotBlank()) &&
-            lookingFor.all { value -> Gender.entries.any { it.wire == value } }
+            Rules.validIdentity(gender, genderCustom) &&
+            Rules.validPreferences(lookingFor)
     }
 
     private companion object {

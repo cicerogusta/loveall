@@ -7,6 +7,26 @@ internal object ProfileEditCases {
     private val valid = TestFixtures.edit
     val all =
         listOf(
+            ProfileEditCase(
+                "city above API limit",
+                valid.copy(city = TestInputs.FILLER.repeat(101)),
+                false,
+            ),
+            ProfileEditCase(
+                "custom identity above API limit",
+                valid.copy(genderCustom = TestInputs.FILLER.repeat(101)),
+                false,
+            ),
+            ProfileEditCase(
+                "duplicate preferences",
+                valid.copy(lookingFor = listOf(Gender.MAN.wire, Gender.MAN.wire)),
+                false,
+            ),
+            ProfileEditCase(
+                "duplicate photos",
+                valid.copy(photos = List(2) { TestPhotos.VALID_URL }),
+                false,
+            ),
             ProfileEditCase("valid profile", valid, true),
             ProfileEditCase(
                 "inclusive upper bounds",
@@ -14,7 +34,7 @@ internal object ProfileEditCases {
                     ageMin = 18,
                     ageMax = 99,
                     maxDistance = 200,
-                    photos = List(6) { TestPhotos.VALID_URL },
+                    photos = List(6) { TestPhotos.VALID_URL + it },
                     bio = TestInputs.FILLER.repeat(500),
                 ),
                 true,

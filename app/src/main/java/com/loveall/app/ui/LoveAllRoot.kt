@@ -80,7 +80,7 @@ private fun SessionContent(
                 }
             }
         state.user == null -> PublicNavigation(state, session)
-        state.user?.termsVersion != LegalPolicy.VERSION ->
+        state.user.termsVersion != LegalPolicy.VERSION ->
             TermsConsentScreen(
                 state,
                 session::acceptTerms,
@@ -88,10 +88,10 @@ private fun SessionContent(
                 session::deleteAccount,
             )
         else ->
-            key(state.user!!.id) {
+            key(state.user.id) {
                 MemberNavigation(
                     container,
-                    requireNotNull(state.user).id,
+                    state.user.id,
                     state.newAccount,
                     session::updateUser,
                     { session.logout() },

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.loveall.app.domain.error.AuthError
 import com.loveall.app.domain.error.AuthException
 import com.loveall.app.domain.model.CallType
+import com.loveall.app.domain.model.Profile
 import com.loveall.app.domain.model.ReportReason
 import com.loveall.app.domain.repository.ConnectionsRepository
 import com.loveall.app.domain.repository.MessagesRepository
@@ -90,7 +91,8 @@ class ChatViewModel(
             try {
                 val result = messages.messages(matchId, 1)
                 mutableState.update {
-                    it.copy(messages = MessageTimeline.merge(it.messages, result))
+                    if (it.closed) it
+                    else it.copy(messages = MessageTimeline.merge(it.messages, result))
                 }
             } catch (error: CancellationException) {
                 throw error
@@ -171,68 +173,23 @@ class ChatViewModel(
         }
     }
 
-    /** Bloqueia a pessoa participante e sinaliza fechamento após a confirmação da API. */
-    fun block() {
-        if (
-            state.value.loading ||
-                state.value.busy ||
-                state.value.closed ||
-                state.value.partner == null
-        )
-            return
-        mutableState.update { it.copy(moderating = true, error = null) }
-        viewModelScope.launch {
-            try {
-                safety.block(requirePartner().id)
-                mutableState.update { it.copy(closed = true) }
-            } catch (error: CancellationException) {
-                throw error
-            } catch (error: Exception) {
-                mutableState.update { it.copy(error = error.toUiError()) }
-            } finally {
-                mutableState.update { it.copy(moderating = false) }
-            }
-        }
-    }
+    /** As ações compartilham o controle de concorrência; cada uma define seu efeito. */
+    fun block() = moderate({ safety.block(it.id) }) { it.copy(closed = true) }
 
-    /** Desfaz a conexão no servidor e só então sinaliza que a conversa deve ser fechada. */
-    fun unmatch() {
-        if (
-            state.value.loading ||
-                state.value.busy ||
-                state.value.closed ||
-                state.value.partner == null
-        )
-            return
-        mutableState.update { it.copy(moderating = true, error = null) }
-        viewModelScope.launch {
-            try {
-                connections.unmatch(matchId)
-                mutableState.update { it.copy(closed = true) }
-            } catch (error: CancellationException) {
-                throw error
-            } catch (error: Exception) {
-                mutableState.update { it.copy(error = error.toUiError()) }
-            } finally {
-                mutableState.update { it.copy(moderating = false) }
-            }
-        }
-    }
+    fun unmatch() = moderate({ connections.unmatch(matchId) }) { it.copy(closed = true) }
 
-    /** Envia a denúncia e publica o sinal usado pelo diálogo de confirmação da interface. */
-    fun report(reason: ReportReason, description: String) {
-        if (
-            state.value.loading ||
-                state.value.busy ||
-                state.value.closed ||
-                state.value.partner == null
-        )
-            return
+    fun report(reason: ReportReason, description: String) =
+        moderate({ safety.report(it.id, reason, description) }) { it.copy(reported = true) }
+
+    private fun moderate(action: suspend (Profile) -> Unit, completed: (ChatState) -> ChatState) {
+        val current = state.value
+        val partner = current.partner ?: return
+        if (current.loading || current.busy || current.closed) return
         mutableState.update { it.copy(moderating = true, error = null) }
         viewModelScope.launch {
             try {
-                safety.report(requirePartner().id, reason, description)
-                mutableState.update { it.copy(reported = true) }
+                action(partner)
+                mutableState.update(completed)
             } catch (error: CancellationException) {
                 throw error
             } catch (error: Exception) {

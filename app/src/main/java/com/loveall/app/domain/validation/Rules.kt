@@ -1,5 +1,6 @@
 package com.loveall.app.domain.validation
 
+import com.loveall.app.domain.model.Gender
 import java.net.URI
 
 object Rules {
@@ -15,6 +16,9 @@ object Rules {
     const val MIN_NAME_LENGTH = 2
     const val MAX_NAME_LENGTH = 50
     const val MIN_PASSWORD_LENGTH = 8
+    const val MAX_PASSWORD_LENGTH = 72
+    const val MAX_CITY_LENGTH = 100
+    const val MAX_CUSTOM_GENDER_LENGTH = 100
     const val MAX_BIO_LENGTH = 500
     const val MAX_PHOTOS = 6
     const val MAX_MESSAGE_LENGTH = 2000
@@ -23,7 +27,32 @@ object Rules {
     const val CHAT_REFRESH_MILLIS = 8000L
 
     fun validName(name: String) =
-        name.trim().length in MIN_NAME_LENGTH..MAX_NAME_LENGTH && name.none(Char::isDigit)
+        name.trim().length in MIN_NAME_LENGTH..MAX_NAME_LENGTH &&
+            name.codePoints().noneMatch { Character.getType(it) in numericCategories }
+
+    // Equivale a \p{N} da API, inclusive números fora do BMP e numerais romanos.
+    private val numericCategories =
+        setOf(
+            Character.DECIMAL_DIGIT_NUMBER.toInt(),
+            Character.LETTER_NUMBER.toInt(),
+            Character.OTHER_NUMBER.toInt(),
+        )
+
+    fun validPassword(password: String) =
+        password.length in MIN_PASSWORD_LENGTH..MAX_PASSWORD_LENGTH &&
+            password.toByteArray(Charsets.UTF_8).size <= MAX_PASSWORD_LENGTH &&
+            password.any { it in 'a'..'z' || it in 'A'..'Z' } &&
+            password.any { it in '0'..'9' }
+
+    fun validIdentity(gender: String, description: String) =
+        Gender.entries.any { it.wire == gender } &&
+            description.length <= MAX_CUSTOM_GENDER_LENGTH &&
+            (gender != Gender.OTHER.wire || description.isNotBlank())
+
+    fun validPreferences(values: List<String>) =
+        values.size <= Gender.entries.size &&
+            values.distinct().size == values.size &&
+            values.all { value -> Gender.entries.any { it.wire == value } }
 
     private val uploadedPhotoPattern = Regex(PHOTO_REFERENCE_PATTERN)
 

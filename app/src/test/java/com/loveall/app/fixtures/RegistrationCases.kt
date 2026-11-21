@@ -7,6 +7,42 @@ internal object RegistrationCases {
     private val valid = TestFixtures.registration
     val all =
         listOf(
+            RegistrationCase(
+                "bcrypt ASCII byte boundary",
+                valid.copy(
+                    password = TestInputs.FILLER.repeat(71) + TestInputs.DIGITS_PASSWORD.take(1)
+                ),
+                true,
+            ),
+            RegistrationCase(
+                "bcrypt suffix would be truncated",
+                valid.copy(
+                    password = TestInputs.FILLER.repeat(72) + TestInputs.DIGITS_PASSWORD.take(1)
+                ),
+                false,
+            ),
+            RegistrationCase(
+                "bcrypt Unicode byte boundary exceeded",
+                valid.copy(password = TestInputs.MULTIBYTE_PASSWORD),
+                false,
+            ),
+            RegistrationCase(
+                "password above API limit",
+                valid.copy(
+                    password = TestInputs.LETTERS_PASSWORD.repeat(12) + TestInputs.DIGITS_PASSWORD
+                ),
+                false,
+            ),
+            RegistrationCase(
+                "custom identity above API limit",
+                valid.copy(genderCustom = TestInputs.FILLER.repeat(101)),
+                false,
+            ),
+            RegistrationCase(
+                "duplicate preferences",
+                valid.copy(lookingFor = listOf(Gender.MAN.wire, Gender.MAN.wire)),
+                false,
+            ),
             RegistrationCase("terms not accepted", valid.copy(termsAccepted = false), false),
             RegistrationCase(
                 "adult with identity preferences",
@@ -42,6 +78,16 @@ internal object RegistrationCases {
             ),
             RegistrationCase("name too short", valid.copy(name = TestInputs.ONE_LETTER), false),
             RegistrationCase("number in name", valid.copy(name = TestInputs.NUMBERED_NAME), false),
+            RegistrationCase(
+                "Roman numeral in name",
+                valid.copy(name = TestInputs.ROMAN_NUMBERED_NAME),
+                false,
+            ),
+            RegistrationCase(
+                "supplementary numeric code point in name",
+                valid.copy(name = TestInputs.SUPPLEMENTARY_NUMBERED_NAME),
+                false,
+            ),
             RegistrationCase(
                 "name above limit",
                 valid.copy(name = TestInputs.ONE_LETTER.repeat(51)),

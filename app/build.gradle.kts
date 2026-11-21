@@ -1,4 +1,5 @@
 import java.net.URI
+import java.util.zip.ZipFile
 
 plugins {
     jacoco
@@ -35,6 +36,15 @@ tasks.register<JacocoCoverageVerification>("verifyBusinessCoverage") {
 }
 
 val configuredApiUrl = providers.gradleProperty("loveall.apiBaseUrl").orNull
+val uploadStoreFile = providers.environmentVariable("LOVEALL_UPLOAD_STORE_FILE").orNull
+val uploadStorePassword = providers.environmentVariable("LOVEALL_UPLOAD_STORE_PASSWORD").orNull
+val uploadKeyAlias = providers.environmentVariable("LOVEALL_UPLOAD_KEY_ALIAS").orNull
+val uploadKeyPassword = providers.environmentVariable("LOVEALL_UPLOAD_KEY_PASSWORD").orNull
+val uploadSigning = listOf(uploadStoreFile, uploadStorePassword, uploadKeyAlias, uploadKeyPassword)
+require(uploadSigning.all { it.isNullOrBlank() } || uploadSigning.all { !it.isNullOrBlank() }) {
+    "Configure all four LOVEALL_UPLOAD_* signing environment variables together"
+}
+val hasUploadSigning = uploadSigning.all { !it.isNullOrBlank() }
 val adsEnabled = providers.gradleProperty("loveall.adsEnabled").orElse("false").get().toBooleanStrict()
 val billingEnabled = providers.gradleProperty("loveall.playBillingEnabled").orElse("false").get().toBooleanStrict()
 val admobAppId = providers.gradleProperty("loveall.admobAppId").orElse("").get()
@@ -59,12 +69,24 @@ android {
         applicationId = "com.loveall.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = providers.gradleProperty("loveall.versionCode").orElse("1").get().toInt().also {
+            require(it > 0) { "loveall.versionCode must be positive" }
+        }
+        versionName = providers.gradleProperty("loveall.versionName").orElse("1.0.0").get()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["admobAppId"] = testAdmobAppId
         buildConfigField("boolean", "ADS_ENABLED", adsEnabled.toString())
         buildConfigField("boolean", "PLAY_BILLING_ENABLED", billingEnabled.toString())
+    }
+    signingConfigs {
+        if (hasUploadSigning) {
+            create("upload") {
+                storeFile = rootProject.file(requireNotNull(uploadStoreFile))
+                storePassword = uploadStorePassword
+                keyAlias = uploadKeyAlias
+                keyPassword = uploadKeyPassword
+            }
+        }
     }
     buildTypes {
         debug {
@@ -77,6 +99,7 @@ android {
             buildConfigField("String", "ADMOB_BANNER_ID", quoted(testBannerId))
         }
         release {
+            if (hasUploadSigning) signingConfig = signingConfigs.getByName("upload")
             isMinifyEnabled = true
             manifestPlaceholders["admobAppId"] = if (adsEnabled) admobAppId else testAdmobAppId
             buildConfigField("String", "ADMOB_APP_ID", quoted(admobAppId))
@@ -93,6 +116,29 @@ android {
     }
 }
 kotlin { jvmToolchain(17) }
+
+val validateUploadSigning = tasks.register("validateUploadSigning") {
+    group = "verification"
+    description = "Rejects Play publication without the configured upload key"
+    doLast {
+        check(hasUploadSigning) { "Use scripts/Build-PlayRelease.ps1 to load the protected upload key" }
+        check(rootProject.file(requireNotNull(uploadStoreFile)).isFile) { "Upload keystore file not found" }
+    }
+}
+tasks.matching { it.name == "bundleRelease" }.configureEach { mustRunAfter(validateUploadSigning) }
+tasks.register("preparePlayRelease") {
+    group = "publishing"
+    description = "Builds a signed, minified Android App Bundle for Play testing"
+    dependsOn(validateUploadSigning, "bundleRelease")
+    doLast {
+        val bundle = layout.buildDirectory.file("outputs/bundle/release/app-release.aab").get().asFile
+        ZipFile(bundle).use { archive ->
+            check(archive.entries().asSequence().any {
+                it.name.startsWith("META-INF/") && it.name.endsWith(".RSA")
+            }) { "The release bundle has no upload signature" }
+        }
+    }
+}
 
 // A release must never silently use the emulator or an invented production host.
 tasks.matching { it.name == "preReleaseBuild" }.configureEach {

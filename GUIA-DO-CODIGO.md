@@ -616,3 +616,16 @@ As rotas passaram a aguardar as consultas e usam Express 5 para encaminhar rejei
 Em `AppContainer`, o tempo máximo de leitura é 90 segundos e o total da chamada é 120 segundos para acomodar o despertar do Render Free. O carregamento continua cancelável pelo ciclo de vida das corrotinas. Isso não garante disponibilidade do provedor.
 
 `server/test/postgres.test.js` verifica migrações repetíveis, schema privado, rollback, billing e os fluxos HTTP com PostgreSQL embarcado PGlite pelo driver `pg`. `photo-store.test.js` verifica o SDK Storage com respostas simuladas e falhas recuperáveis. O workflow também prepara um job PostgreSQL 16 real, ainda dependente de execução no GitHub. Nenhum desses testes significa que o serviço cloud já foi publicado.
+
+
+## 18. Revisão de publicação de 20/11/2026
+
+As regras usadas no cadastro e na edição foram alinhadas ao servidor e extraídas para funções nomeadas em `Rules`. Duplicatas em fotos/preferências e campos acima do limite são rejeitados antes da requisição. Senhas novas não podem ultrapassar 72 bytes UTF-8, pois bcrypt ignora bytes posteriores a esse limite.
+
+No chat e na descoberta, helpers privados ao próprio ViewModel coordenam ações com o mesmo ciclo de estado. Eles não criam outra camada de ViewModel. O armazenamento de sessão usa exclusão mútua também para proteger a chave criptográfica, além do Mutex do repositório de autenticação.
+
+`FormComponents`, `FeedbackComponents` e `IdentityComponents` separam responsabilidades antes reunidas em `Components`. Os componentes continuam recebendo dados e callbacks; não consultam a API.
+
+A API oferece páginas públicas de privacidade, termos, segurança infantil e exclusão. O POST do formulário pede credenciais e confirmação, verifica a origem e limita tentativas; depois chama `deleteAccount`, que mantém as transações e a fila de remoção de fotos já usadas pelo Android. Publicar o código no Render é necessário para tornar esses endereços acessíveis na ficha da Play.
+
+A tarefa `preparePlayRelease` e `scripts/Build-PlayRelease.ps1` geram um AAB assinado com a chave de upload protegida localmente. O script não envia nada à Play. A chave fica fora do Git, e a credencial DPAPI é vinculada ao usuário Windows; backup externo recuperável e registros da Play continuam sendo etapas próprias. Veja [a revisão atual](docs/REVISAO-PUBLICACAO.md).

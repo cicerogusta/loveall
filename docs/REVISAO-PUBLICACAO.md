@@ -1,108 +1,95 @@
-# Revisão e ajustes para publicação
+# Revisão para publicação na Google Play — 20/11/2026
 
-Atualizado em 12/11/2026. Destino previsto: Google Play. Conforme solicitado, a distribuição fica para a última etapa.
+O código foi revisado para o aplicativo Android Kotlin/Compose. O pacote de distribuição é **com.loveall.app**, versão **1.0.0**, versionCode **1**, minSdk 26 e targetSdk 36. Nenhuma versão foi enviada à Play nesta revisão.
 
-**Os ajustes possíveis no código foram implementados. A publicação continua pendente de infraestrutura, identificação do responsável, operação de segurança e configuração da loja.** Chamadas e compras não fazem parte da versão disponível; não foram declaradas como concluídas.
+## Alterações desta revisão
 
-## Atualização de monetização
+- Validações compartilhadas no domínio para senha, identidade e preferências. Cadastro e edição agora rejeitam cidade/descrição acima do limite, listas duplicadas e referências de foto repetidas, em acordo com a API.
+- Senhas novas respeitam o limite de 72 bytes UTF-8 do bcrypt, evitando sufixos ignorados. Login de contas existentes continua com o contrato anterior.
+- Ações repetidas de passar/bloquear e moderação no chat foram simplificadas dentro de seus próprios ViewModels. Não foi criada uma superclasse genérica de ViewModel. Uma consulta de mensagens atrasada não modifica o histórico depois de fechar a conversa.
+- Armazenamento Keystore serializa leitura, gravação, limpeza e geração da chave. Isso evita uma leitura antiga limpar uma sessão recém-gravada ou duas operações concorrerem na criação da chave.
+- Componentes de formulário, feedback e identidade foram separados do arquivo genérico de componentes, mantendo a API dos composables.
+- Documentos locais receberam o responsável e contato fornecidos: Cicero Pinheiro, loveallappcp@gmail.com. A vírgula digitada no endereço foi normalizada para ponto. A versão legal passou a 2026-11-20 no Android, API e fixtures: usuários anteriores precisarão aceitar os documentos atualizados.
+- Páginas públicas preparadas na API, incluindo exclusão funcional pelo navegador com reautenticação, confirmação explícita, limite de tentativas e verificação de origem. Senhas não são colocadas em URLs, respostas ou logs.
+- Configuração de assinatura por variáveis de ambiente e tarefa preparePlayRelease, que verifica chave e assinatura no AAB. A chave de upload foi criada localmente, com senha protegida por DPAPI do Windows e arquivos excluídos do Git.
 
-A [assinatura para remover anúncios](MONETIZACAO.md) recebeu integração de Play Billing, verificação no servidor, RTDN autenticado e AdMob/UMP. O código fica desligado por padrão e ainda depende dos registros, credenciais, catálogo e homologação com as contas reais. Isso não reativa o checkout externo nem as chamadas. A avaliação abaixo descreve a rodada anterior de correções; os resultados mais recentes da monetização ficam em `qa/monetization`.
+## Bundle e chave de upload
 
-## Problemas tratados
-
-| Achado da revisão | Tratamento atual |
-| --- | --- |
-| JWT com segredo alternativo conhecido | Removido. A API recusa inicialização sem segredo exclusivo com pelo menos 32 caracteres. A verificação aceita somente HS256 e contas ativas não banidas. Compose exige a variável em vez de fornecer um padrão. |
-| Eventos Socket.IO sem autorização | Removidos junto à dependência. O Android mantém o chat REST existente; o antigo canal não fica exposto. |
-| Webhook sem comprovação do pagamento | O fluxo inseguro e o SDK foram retirados. Webhook, compra, elegibilidade e registro de chamada retornam indisponibilidade e não concedem saldo. A consulta de assinaturas existentes foi preservada. |
-| Ofertas de chamadas ainda não entregues | Compras desabilitadas em debug e release; nenhum parâmetro Gradle as habilita. A tela informa indisponibilidade e esconde ofertas. Saldo anterior permanece consultável. |
-| Status `failed` desconhecido | Mapeado como terminal no Android, com apresentação e teste correspondentes. |
-| Atualização de perfil sem contrato validado | Tipos, enumerações, nomes, limites, preferências, faixa etária, distância, coordenadas e propriedade das fotos são conferidos no servidor antes de gravar. Campos desconhecidos são rejeitados. |
-| Cadastro com validação permissiva | Datas ISO reais, idade entre 18 e 120, tipos, identidade, preferências e aceite da versão atual das regras são validados. Conta e assinatura inicial são criadas em uma transação. |
-| Exclusão de conta ausente | Implementada na API e no perfil Android, exigindo senha e confirmação explícita. Remove dados associados da base ativa em transação e invalida tokens pela ausência da conta. |
-| Fotos sem controle de propriedade e remoção | Inventário por usuário; referências novas pertencem ao próprio usuário. JPEG é decodificado e recodificado, com limite de pixels, redimensionamento e remoção de metadados. Há quota e limite de envio. |
-| Fotos removidas ainda acessíveis | Remoção do perfil enfileira exclusão física e impede acesso pela API imediatamente. Downloads usam `no-store`. Falhas de remoção são repetidas na manutenção. Rascunhos abandonados e arquivos órfãos expiram após 24 horas. |
-| Ausência de termos e privacidade acessíveis | Documentos locais acessíveis na entrada, no cadastro e no perfil. Cadastro exige aceite explícito. Contas antigas têm tela de revisão; a API exige aceite atual antes de publicar conteúdo. Exclusão, denúncia e bloqueio permanecem acessíveis sem novo aceite. |
-| Dados e interações malformados | Entradas inválidas de mensagens, paginação, curtidas, bloqueios e denúncias são rejeitadas. Perfis bloqueados não podem ser consultados diretamente. Datas completas de nascimento não são devolvidas nos perfis públicos. |
-| Dependências de produção sinalizadas | Dependências sem uso removidas, bibliotecas atualizadas e lockfile atualizado. Auditoria posterior: **zero vulnerabilidades sinalizadas pelo npm**. Isso não equivale a ausência de qualquer falha no produto. |
-
-As referências externas de fotos já existentes podem ser preservadas para não quebrar perfis anteriores. Não são aceitas novas URLs externas arbitrárias pela atualização de perfil. Arquivos que já tenham sido baixados por outras pessoas não podem ser apagados dos aparelhos delas.
-
-## Como funciona a exclusão
-
-1. A pessoa abre o perfil, escolhe **Excluir minha conta**, lê o alcance da exclusão e informa sua senha.
-2. `SessionViewModel` solicita a exclusão ao `AuthRepository`; a senha não é persistida no estado salvo da Activity.
-3. `DELETE /api/auth/me` exige autenticação e confere a senha contra o hash da própria conta.
-4. Uma transação remove mensagens das conversas compartilhadas, histórico de chamadas, curtidas, rejeições, bloqueios, denúncias, matches, pagamentos, assinatura e conta. Conversas sem relação com essa pessoa são preservadas.
-5. Fotos são marcadas para remoção; a API deixa de servi-las e tenta apagar os arquivos. Uma fila persistente permite repetir falhas de disco.
-6. Depois da resposta de sucesso, o aplicativo apaga a sessão e retorna à entrada. Senha incorreta permite corrigir e tentar novamente.
-
-A regra atual remove registros de pagamentos da base ativa porque esta versão não realiza compras. Antes de reativar transações reais, definir e implementar eventuais retenções necessárias, conciliação, reembolsos e tratamento dos dados na exclusão. Backups de uma futura infraestrutura também precisam de política de retenção e de um procedimento que não restaure contas excluídas.
-
-## Validação
-
-- Builds debug e bundle release com R8, testes JVM, cobertura de regras, lint e testes Android executados com sucesso. Lint: zero erros; 24 avisos em debug e 26 em release, principalmente versões de ferramentas/dependências e recomendações. O bundle continua sem assinatura e com URL fictícia de verificação.
-- [Resumo dos resultados](../qa/publication-review/results.json).
-- **124 testes JVM**, sem falhas. Cobertura continua limitada às classes explicitamente configuradas; não representa cobertura integral.
-- **9 testes de integração/segurança da API**, com processos e bancos temporários isolados: segredo JWT, token falso, datas e consentimento, validação e propriedade das fotos, remoção e manutenção, interações malformadas, rotas indisponíveis e exclusão preservando dados de outras pessoas.
-- Auditoria original: [14 pacotes sinalizados](../qa/publication-review/npm-audit.json). Auditoria posterior: [zero sinalizações](../qa/publication-review/npm-audit-after.json).
-- CI da API acrescentado em `.github/workflows/server.yml`, com testes e auditoria. A configuração foi escrita localmente; a execução no GitHub ainda depende do próximo envio ao repositório.
-- **21 testes instrumentados Android** passaram no emulador: cadastro e aceite, revisão das regras em conta antiga, exclusão com erro de senha e nova tentativa, chat, denúncia, planos sem ofertas, seletor de fotos e armazenamento seguro.
-
-Para repetir:
+Para gerar novamente no mesmo usuário Windows:
 
 ```powershell
-.\gradlew.bat :app:assembleDebug :app:verifyBusinessCoverage :app:lintDebug :app:assembleDebugAndroidTest
-cd server
-npm ci
-npm test
-npm audit --omit=dev
+.\scripts\Build-PlayRelease.ps1 -VersionCode 1 -VersionName 1.0.0
 ```
 
-A API local exige `JWT_SECRET`; `scripts/start-api.ps1` gera um segredo aleatório quando cria um novo `.env`. Um `.env` antigo inválido precisa ser corrigido; o servidor não troca silenciosamente seu segredo. Os testes não excluem contas reais: utilizam bancos temporários.
+O resultado é `app/build/outputs/bundle/release/app-release.aab`. O script carrega temporariamente as quatro variáveis LOVEALL_UPLOAD_* e as restaura ao terminar. Não passar senhas na linha de comando. Usar um versionCode maior em cada envio posterior.
 
-O reinício final da API local foi rejeitado pela revisão automática de aprovação com a indicação `blocked by policy`, sem justificativa adicional. Reiniciar manualmente o processo de desenvolvimento para carregar a última alteração. Os testes da API usaram processos novos com o código atualizado.
+A chave está em `.secrets/loveall-upload.jks`; a senha fica cifrada em `.secrets/upload.signing.xml`. Esse XML só pode ser aberto pelo mesmo usuário no mesmo Windows: **copiá-lo sozinho não é um backup portátil**. Preserve a chave, faça um backup recuperável fora deste computador antes de enviar o app e use Play App Signing no Console. Nunca envie arquivos de chave/senha ao Git, Render, chat ou pacote da API. Se a chave já existir, New-UploadKey.ps1 não a substitui.
 
-## O que ainda depende de definições reais
+A revisão automática de aprovação bloqueou o comando de exportação/teste de backup portátil com a indicação genérica `blocked by policy`. Nenhuma exportação foi realizada; o backup externo permanece manual. A geração da chave e a assinatura local foram concluídas separadamente.
 
-### Produto e operação
+## Páginas que precisam entrar no ar
 
-- Informar a identidade do responsável/controlador e o contato de suporte/privacidade/segurança infantil. Os textos locais descrevem a versão atual, mas ainda precisam dessas informações e da revisão correspondente ao serviço real. Não foram inventados contatos ou uma equipe de moderação.
-- Definir atendimento e resolução de denúncias, inclusive de menores e material de abuso. Registrar denúncias e aplicar banimento automático não substitui esse processo.
-- Validar os textos finais de privacidade e termos com as práticas reais, prestadores e retenções que serão adotados.
-- Se houver desejo de chamadas ou planos pagos na primeira versão, concluir mídia, cobrança permitida, comprovação de pagamentos e testes financeiros antes de reativá-los. A versão atual pode ser homologada com os recursos gratuitos existentes.
+| Uso no Console | URL preparada |
+| --- | --- |
+| Site do desenvolvedor | https://loveall-api.onrender.com/ |
+| Política de privacidade | https://loveall-api.onrender.com/privacy |
+| Termos | https://loveall-api.onrender.com/terms |
+| Padrões de segurança infantil | https://loveall-api.onrender.com/child-safety |
+| Exclusão fora do app | https://loveall-api.onrender.com/delete-account |
+| Verificação AdMob | https://loveall-api.onrender.com/app-ads.txt |
 
-### Distribuição — etapa final
+Estas rotas novas dependem de publicar as alterações da API no Render. Faça isso **antes de testar o novo Android contra o serviço público**, porque a versão de aceite dos termos também mudou. Não basta inserir no Console uma URL que ainda retorna 404. Para outro host, configure PUBLIC_SITE_URL para a origem HTTPS efetivamente usada pelo formulário de exclusão.
 
-A opção atual é [Render Free + Supabase Free](RENDER-SUPABASE.md), após o cadastro Oracle brasileiro só oferecer Corporate. A API foi adaptada para PostgreSQL e Storage privado; contas, credenciais e URL pública ainda não foram configuradas. O plano gratuito atende homologação; o Render desaconselha produção comercial em Free. Backup externo e homologação real continuam pendentes.
+A exclusão no navegador remove a conta e dependências da base ativa; não é só um formulário de contato. A fila de remoção de fotos mantém retentativas quando o Storage falha. O responsável ainda precisa definir e operar backup, retenções de infraestrutura e atendimento aos titulares. Os textos descrevem esses limites sem inventar um prazo de backup.
 
-1. Provisionar API HTTPS real, persistência, backups e monitoramento; alinhar a imagem de execução ao Node 22 usado nos testes. Ainda não existe URL de produção, conforme informado.
-2. Publicar páginas de privacidade, regras de segurança e uma página funcional de solicitação de exclusão. A exclusão dentro do Android já está implementada; o recurso web ainda precisa ser publicado e integrado ao atendimento ou ao fluxo correspondente.
-3. Configurar chave de upload, assinatura e Play App Signing; confirmar pacote e versionamento no Console.
-4. Preencher Segurança dos dados, classificação de conteúdo, restrição de menores, contato responsável, materiais da loja e acesso para revisão.
-5. Homologar o release assinado contra a infraestrutura real, incluindo exclusão, privacidade, rede, fotos, bloqueios e restauração. Executar o teste interno e o relatório de pré-lançamento da Play.
+Na checagem externa desta revisão, `/api/health` e as URLs de suporte não responderam dentro de 95 segundos. Não foi possível validar a infraestrutura pública; verificar status/logs do Render e se o projeto Supabase está pausado. Não considerar a API homologada com base apenas no teste local.
 
-O AAB da revisão inicial foi compilado com URL fictícia e sem assinatura: não deve ser distribuído. O `targetSdk 36` atende ao requisito consultado; isso não garante aprovação geral.
+## Passos externos ainda obrigatórios
 
-Referências oficiais consultadas:
+1. Publicar e abrir as páginas acima; testar cadastro, login, foto, mensagem, bloqueio e exclusão contra a API real com contas de teste autorizadas. A revisão automatizada usa bancos e HTTP isolados e não cria perfis de produção.
+2. Na Play Console, cadastrar LoveAll e com.loveall.app, enviar o AAB à faixa de teste, habilitar Play App Signing e guardar a chave de upload com backup recuperável.
+3. Informar público exclusivamente adulto e aplicar o bloqueio de menores exigido para apps de encontros; não basta o campo de nascimento no app. Preencher classificação de conteúdo, declaração de anúncios, Segurança dos dados e os URLs de privacidade/exclusão.
+4. Usar Cicero Pinheiro e loveallappcp@gmail.com como responsável/contato autorizados. Confirmar acesso à caixa de email e operar análise de denúncias, remoção de conteúdo, medidas de segurança infantil e comunicação às autoridades quando aplicável. Publicar um texto não cria uma equipe de moderação.
+5. No AdMob, configurar/publicar as mensagens UMP pertinentes, conferir app-ads.txt e concluir verificação/prontidão. Debug continua com unidade de teste; release usa os IDs reais fornecidos. Assinaturas e chamadas permanecem desligadas.
+6. Preparar ícone, capturas reais e gráfico de destaque, descrição e dados de acesso para revisão. Não declarar funcionamento de chamadas ou compras indisponíveis. Executar o relatório de pré-lançamento da Play.
+7. Se a conta pessoal for abrangida pela regra de novos desenvolvedores, realizar teste fechado com pelo menos 12 testadores inscritos continuamente por 14 dias antes de solicitar produção.
+8. Validar backup/restauração e monitoramento. Render Free pode dormir e não é recomendado pelo provedor para produção; os limites gratuitos não garantem disponibilidade comercial.
 
-- [Exclusão de conta, incluindo recurso web](https://support.google.com/googleplay/android-developer/answer/13327111?hl=en).
-- [Dados do usuário](https://support.google.com/googleplay/android-developer/answer/10144311?hl=en) e [conteúdo gerado pelo usuário](https://support.google.com/googleplay/android-developer/answer/9876937?hl=en-GB).
-- [Segurança infantil](https://support.google.com/googleplay/android-developer/answer/14747720?hl=en-CA-3) e [restrição de menores](https://support.google.com/googleplay/android-developer/answer/16302250?hl=en).
-- [Pagamentos](https://support.google.com/googleplay/android-developer/answer/10281818?hl=en), [API alvo](https://support.google.com/googleplay/android-developer/answer/11926878?hl=en) e [assinatura](https://developer.android.com/studio/publish/app-signing).
+## Segurança dos dados: base para preencher o Console
+
+Revise as respostas conforme os SDKs e configurações efetivamente distribuídos:
+
+| Dados | Tratamento no app/serviço |
+| --- | --- |
+| Nome, email, nascimento, identificador da conta | Cadastro, autenticação e idade; armazenados no serviço |
+| Gênero, preferências, biografia, cidade | Perfil/descoberta; informações pessoais potencialmente sensíveis e parte do perfil público |
+| Fotos | Perfil público; Storage privado com entrega controlada pela API; metadados removidos |
+| Mensagens, curtidas, conexões | Funcionalidades de conversa e descoberta; sem criptografia de ponta a ponta |
+| Denúncias e bloqueios | Segurança e moderação |
+| IP/localização aproximada inferida, IDs do dispositivo/publicidade, interações e diagnósticos | Coleta/compartilhamento pelo SDK AdMob para publicidade, análise e prevenção de fraude; considerar declarações da Google |
+| Compras | A integração existe, mas venda de assinatura está desligada na configuração atual |
+
+As comunicações usam TLS, a senha é hash, o token local é cifrado e há exclusão dentro e fora do app. Isso não significa ausência de coleta ou compartilhamento por prestadores. Não preencher “nenhum dado coletado”. Os SDKs de anúncios e permissões do manifesto final devem constar da avaliação. Não há permissão de contatos, câmera, microfone nem acesso amplo à galeria; fotos usam o seletor Android.
+
+## Fontes oficiais verificadas em 20/11/2026
+
+- [API alvo 36](https://developer.android.com/google/play/requirements/target-sdk) e [páginas de memória de 16 KB](https://developer.android.com/guide/practices/page-sizes).
+- [Exclusão dentro e fora do app](https://support.google.com/googleplay/android-developer/answer/13327111).
+- [Segurança infantil](https://support.google.com/googleplay/android-developer/answer/14747720?hl=pt-BR) e [bloqueio de menores](https://support.google.com/googleplay/android-developer/answer/16302250?hl=pt-BR).
+- [Teste fechado para novas contas pessoais](https://support.google.com/googleplay/android-developer/answer/14151465?hl=pt-BR).
+- [Dados tratados pelo AdMob](https://developers.google.com/admob/android/next-gen/privacy/play-data-disclosure) e [assinatura Android](https://developer.android.com/studio/publish/app-signing).
+
+As evidências finais e limitações desta execução ficam em `qa/release-review-2026-11-20/`. O bundle compilado e testes locais não equivalem a aprovação da loja.
 
 
-### Preparação Render + Supabase — 12/11/2026
+## Resultado final das verificações
 
-Código adaptado sem alterar o contrato do Android: PostgreSQL assíncrono, schema privado versionado, TLS com validação, fotos em bucket privado e limpeza recuperável. SQLite e arquivos locais preservados para desenvolvimento. Blueprint gratuito sem disco persistente, validado contra o schema oficial Render; assinaturas desativadas por padrão.
+- 155 testes JVM e 26 testes instrumentados aprovados na verificação final; houve um timeout de login na primeira rodada, seguido de aprovação do caso isolado e duas suítes completas.
+- 43 testes da API aprovados, incluindo exclusão web, proteção de origem e fronteira de senha bcrypt.
+- Lint debug/release: zero erros; 25/26 avisos, majoritariamente versões de dependências e recomendações de estilo/API. Não foi feita atualização ampla de SDKs/AGP apenas para eliminar avisos.
+- Cobertura de linhas das regras selecionadas: 78/78 (100%). Não representa cobertura de todo o app.
+- AAB de release 1.0.0 assinado, minificado com R8 e verificado por jarsigner. As duas bibliotecas nativas de 64 bits presentes têm segmentos ELF alinhados a 16 KB; a execução em dispositivo de páginas 16 KB ainda precisa integrar a matriz de testes da loja.
+- Auditoria npm das dependências de produção: zero vulnerabilidades conhecidas.
+- O APK debug atualizado foi instalado e iniciado no emulador. A checagem pública da infraestrutura permaneceu sem resposta nesta revisão.
 
-Nesta rodada: **35 testes da API e 142 testes JVM aprovados**, APK debug compilado e auditoria das dependências de produção sem vulnerabilidades conhecidas. Os testes PostgreSQL locais usam PGlite pelo protocolo `pg`; o workflow também prepara PostgreSQL 16 real, ainda não executado remotamente. Instrumentação anterior não foi repetida nesta mudança. Evidências em `qa/render/results.json`.
-
-Na preparação anterior ainda não havia publicação nem contas Render/Supabase configuradas. Permanecem pendentes configuração real, TLS do projeto, proxy, despertar, persistência após deploy e backup externo. Docker não está disponível neste computador para validar a imagem localmente. Consulte [o procedimento atual](RENDER-SUPABASE.md).
-
-
-### API publicada e endereço Android configurado — 12/11/2026
-
-Após o usuário concluir o deploy e informar `https://loveall-api.onrender.com/`, o health check `/api/health` respondeu HTTP 200 com `status: ok` e ambiente `production`. O endpoint `/api/auth/me` respondeu HTTP 401 sem token, como esperado. A URL `https://loveall-api.onrender.com/api/` foi registrada em `gradle.properties` para o Android Studio e builds debug/release. A compilação do APK debug, a compilação dos testes instrumentados e os 142 testes JVM passaram. O `BuildConfig` gerado confirma o endereço cloud e anúncios/assinaturas desativados.
-
-Estas verificações não criaram contas nem alteraram dados de produção. Login, cadastro, fotos, mensagens e persistência no ambiente cloud permanecem pendentes de teste com contas apropriadas. Contas do SQLite local não foram migradas para o PostgreSQL. Assinatura de distribuição e registros/homologação de monetização continuam pendentes.
+Metadados, hash do AAB, logs e limitações: [qa/release-review-2026-11-20/results.json](../qa/release-review-2026-11-20/results.json).

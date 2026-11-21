@@ -21,6 +21,33 @@ class ChatViewModelTest {
         get() = mainDispatcherRule.dispatcher
 
     @Test
+    fun `failed unmatch keeps conversation open and permits retry`() =
+        runTest(dispatcher) {
+            val connections = FakeConnectionsRepository().apply { failUnmatch = true }
+            val vm =
+                ChatViewModel(
+                    TestConversations.MATCH_ID,
+                    FakeMessagesRepository(),
+                    connections,
+                    FakeSafetyRepository(),
+                    FakePlansRepository(),
+                )
+            advanceUntilIdle()
+            vm.unmatch()
+            advanceUntilIdle()
+            assertFalse(vm.state.value.closed)
+            assertFalse(vm.state.value.moderating)
+            assertEquals(AuthError.NETWORK, vm.state.value.error)
+            connections.failUnmatch = false
+            vm.unmatch()
+            vm.unmatch()
+            advanceUntilIdle()
+            assertTrue(vm.state.value.closed)
+            assertEquals(2, connections.unmatchCalls)
+            assertNull(vm.state.value.error)
+        }
+
+    @Test
     fun `background chat refresh permits sending and preserves new messages`() =
         runTest(dispatcher) {
             val messages = FakeMessagesRepository()

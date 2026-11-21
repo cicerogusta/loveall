@@ -1,5 +1,5 @@
 {
-  "sha256": "1e4b87eb38928637114acb7fbf5d16da6ca58ae6b51877ca142b74b24130b08a",
+  "sha256": "18614e75e563f5ea510aee0fc77e82e85457161dc4843f57596162c70ea2f365",
   "files": [
     "Dockerfile",
     ".dockerignore",
@@ -27,7 +27,9 @@
     "server/src/routes/messages.js",
     "server/src/routes/photos.js",
     "server/src/routes/profiles.js",
+    "server/src/routes/public-pages.js",
     "server/src/routes/safety.js",
+    "server/src/public/pages.js",
     "server/src/middleware/auth.js",
     "server/src/middleware/safety.js",
     "server/src/middleware/terms.js",

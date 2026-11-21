@@ -74,35 +74,17 @@ class ExploreViewModel(
         }
     }
 
-    /** Registra a decisão de passar e remove o perfil após a resposta de sucesso. */
-    fun pass(profile: Profile) {
-        if (state.value.loading || state.value.busy) return
-        mutableState.update { it.copy(processingProfileId = profile.id, error = null) }
-        viewModelScope.launch {
-            try {
-                connections.pass(profile.id)
-                mutableState.update {
-                    it.copy(
-                        profiles = it.profiles.filterNot { candidate -> candidate.id == profile.id }
-                    )
-                }
-            } catch (error: CancellationException) {
-                throw error
-            } catch (error: Exception) {
-                mutableState.update { it.copy(error = error.toUiError()) }
-            } finally {
-                mutableState.update { it.copy(processingProfileId = null) }
-            }
-        }
-    }
+    /** A fila muda somente depois que a API confirma passar ou bloquear. */
+    fun pass(profile: Profile) = removeProfile(profile, connections::pass)
 
-    /** Confirma o bloqueio no servidor antes de retirar o perfil da lista local. */
-    fun block(profile: Profile) {
+    fun block(profile: Profile) = removeProfile(profile, safety::block)
+
+    private fun removeProfile(profile: Profile, action: suspend (String) -> Unit) {
         if (state.value.loading || state.value.busy) return
         mutableState.update { it.copy(processingProfileId = profile.id, error = null) }
         viewModelScope.launch {
             try {
-                safety.block(profile.id)
+                action(profile.id)
                 mutableState.update {
                     it.copy(
                         profiles = it.profiles.filterNot { candidate -> candidate.id == profile.id }

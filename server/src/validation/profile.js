@@ -14,12 +14,13 @@ export const genders = new Set([
   'other',
   'prefer_not_say',
 ]);
-export const legalVersion = '2026-11-12';
+export const legalVersion = '2026-11-20';
 const text = (value, max, min = 0) =>
   typeof value === 'string' && value.trim().length >= min && value.length <= max;
 const integer = (value, min, max) => Number.isInteger(value) && value >= min && value <= max;
 export const validName = (value) => text(value, 50, 2) && !/\p{N}/u.test(value);
-export const validPassword = (value) => text(value, 128, 8) && /[a-zA-Z]/.test(value) && /[0-9]/.test(value);
+// bcrypt considera no máximo 72 bytes: não aceita cadastros com sufixos ignorados.
+export const validPassword = (value) => text(value, 72, 8) && Buffer.byteLength(value, 'utf8') <= 72 && /[a-zA-Z]/.test(value) && /[0-9]/.test(value);
 export const validPreferences = (value) =>
   Array.isArray(value) &&
   value.length <= genders.size &&

@@ -47,3 +47,14 @@ Para usar a API local no emulador, sobrescreva o endereço no build:
 No dispositivo físico, use uma API HTTPS acessível ou `adb reverse tcp:3001 tcp:3001` e a URL debug `http://localhost:3001/api/`.
 
 Consulte [docs/ANDROID.md](docs/ANDROID.md) para release, segurança da sessão e verificações. Não use os comandos Capacitor/npm dos arquivos em `legacy/` para gerar este aplicativo.
+
+
+## Preparar bundle assinado para a Play
+
+No mesmo usuário Windows em que a chave de upload foi criada:
+
+```powershell
+.\scripts\Build-PlayRelease.ps1 -VersionCode 1 -VersionName 1.0.0
+```
+
+O AAB fica em `app/build/outputs/bundle/release/app-release.aab`. O script usa a chave em `.secrets/loveall-upload.jks` e a credencial protegida por DPAPI; não coloque senhas no Git nem no comando. Aumente VersionCode a cada novo envio. Antes de distribuir, preserve backup recuperável fora deste computador e conclua a [revisão da Play](docs/REVISAO-PUBLICACAO.md), inclusive a publicação das páginas da API e os testes exigidos no Console.

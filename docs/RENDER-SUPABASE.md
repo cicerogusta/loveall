@@ -94,3 +94,10 @@ Se o log mostrar apenas `Não foi possível inicializar PostgreSQL; confira a co
 | `ENOENT` | Caminho do certificado e arquivos de migração presentes no deploy |
 
 Para a CA, consulte Database Settings → SSL Configuration no Supabase. No Render, cadastre o certificado em Secret Files e use o caminho real fornecido pelo painel. Não desative a validação TLS para contornar a falha. A configuração correta depende do código registrado; a mensagem genérica antiga não comprova problema de certificado.
+
+
+## Revisão de 20/11/2026
+
+Foram preparadas rotas de suporte em `/`, `/privacy`, `/terms`, `/child-safety` e `/delete-account`, além de `app-ads.txt`. A versão legal agora é `2026-11-20` no Android e na API; publique o backend atualizado antes de testar essa versão do app. O responsável autorizado é Cicero Pinheiro, contato `loveallappcp@gmail.com`.
+
+Nesta revisão, a verificação externa da API e das páginas expirou após 95 segundos sem resposta. O resultado HTTP 200 registrado em 12/11 é histórico e não comprova disponibilidade atual. Confira no Render o serviço/logs e no Supabase se o projeto está ativo ou pausado. Testes locais não substituem essa validação pública nem definem backup/monitoramento de produção.
