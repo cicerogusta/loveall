@@ -1,6 +1,11 @@
 package com.loveall.app.fixtures
 
 internal object NativeApiContract {
+    const val PCD_MEMBERSHIP = "/api/profiles/me/pcd-community"
+    const val PCD_DISCOVER = "/api/profiles/pcd-discover"
+    const val ENABLED_FIELD = "enabled"
+    const val CONSENT_FIELD = "consent"
+    const val PUT_METHOD = "PUT"
     const val API_ROOT = "/api/"
     const val AUTH_LOGIN = "/api/auth/login"
     const val AUTH_REGISTER = "/api/auth/register"
@@ -9,7 +14,7 @@ internal object NativeApiContract {
     const val DELETE_METHOD = "DELETE"
     const val PASSWORD_FIELD = "password"
     const val TERMS_FIELD = "terms_version"
-    const val TERMS_VERSION = "2026-11-20"
+    const val TERMS_VERSION = "2026-11-21"
     const val DISCOVER = "/api/profiles/discover"
     const val INCOMING_LIKES = "/api/likes/who-liked-me"
     const val LIKE = "/api/likes/like"

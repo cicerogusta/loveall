@@ -1,0 +1,29 @@
+1
+00:00:00,000 --> 00:00:07,000
+Conheça novas pessoas
+Na aba Descobrir, veja os perfis disponíveis. Toque no cartão para conhecer melhor a pessoa.
+
+2
+00:00:07,000 --> 00:00:15,000
+Escolha com liberdade
+Gostou do perfil? Toque em Curtir. Para ver outra pessoa, toque em Passar. Respeite as escolhas de cada pessoa.
+
+3
+00:00:15,000 --> 00:00:23,000
+O interesse é mútuo
+Quando as duas pessoas se curtem, acontece um match. Uma curtida sozinha não abre uma conversa.
+
+4
+00:00:23,000 --> 00:00:30,000
+Encontre suas conexões
+Abra a aba Matches e toque na conexão para entrar na conversa.
+
+5
+00:00:30,000 --> 00:00:38,000
+Comece a conversar
+Escreva sua mensagem no campo da conversa e toque em Enviar. Seja gentil e não compartilhe dados sensíveis.
+
+6
+00:00:38,000 --> 00:00:46,000
+Cuide da sua segurança
+Se precisar, use as opções de denunciar, bloquear ou desfazer match. Você não precisa continuar uma conversa desconfortável.

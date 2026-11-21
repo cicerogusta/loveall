@@ -1,0 +1,29 @@
+1
+00:00:00,000 --> 00:00:08,000
+Um espaço voluntário
+Na descoberta ou no seu Perfil, abra Comunidade PcD. A participação é opcional e destinada a pessoas adultas com deficiência.
+
+2
+00:00:08,000 --> 00:00:17,000
+Leia antes de participar
+A participação é autodeclarada. Não pedimos laudo ou diagnóstico. Ao entrar, outros participantes poderão inferir essa informação ao encontrar seu perfil.
+
+3
+00:00:17,000 --> 00:00:25,000
+Confirme seu consentimento
+Se concordar e for pessoa com deficiência, marque a declaração e toque em Concordar e entrar na comunidade.
+
+4
+00:00:25,000 --> 00:00:33,000
+Descubra participantes
+Nesta seção, você encontra outras pessoas que também escolheram participar. Curtidas mútuas geram matches e conversas pelo fluxo normal.
+
+5
+00:00:33,000 --> 00:00:41,000
+Saia quando quiser
+Na comunidade, toque em Sair da comunidade e confirme. Sua participação e o registro de consentimento são removidos da base ativa.
+
+6
+00:00:41,000 --> 00:00:50,000
+Suas conexões continuam
+Sair da comunidade não desfaz matches nem conversas existentes. Seu perfil continua na descoberta geral. Para entrar novamente, confirme o consentimento outra vez.

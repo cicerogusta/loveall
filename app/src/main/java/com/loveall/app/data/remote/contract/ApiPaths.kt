@@ -1,6 +1,9 @@
 package com.loveall.app.data.remote.contract
 
 object ApiPaths {
+    const val PCD_MEMBERSHIP = "profiles/me/pcd-community"
+    const val PCD_DISCOVER = "profiles/pcd-discover"
+    const val PCD_LIKE = "likes/pcd-like"
     const val BILLING_CONFIG = "billing/config"
     const val BILLING_ENTITLEMENTS = "billing/entitlements"
     const val BILLING_VERIFY = "billing/verify"

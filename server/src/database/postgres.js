@@ -48,10 +48,13 @@ export async function migratePostgres(pool) {
     await client.query('SET LOCAL search_path TO loveall, pg_catalog');
     await client.query('CREATE TABLE IF NOT EXISTS schema_migrations (version INTEGER PRIMARY KEY)');
     await client.query('LOCK TABLE schema_migrations IN EXCLUSIVE MODE');
-    const { rows } = await client.query('SELECT version FROM schema_migrations WHERE version = 1');
-    if (!rows.length) {
-      await client.query(await readFile(new URL('./migrations/001-initial.sql', import.meta.url), 'utf8'));
-      await client.query('INSERT INTO schema_migrations(version) VALUES (1)');
+    const migrations = ['001-initial.sql', '002-pcd-community.sql'];
+    for (const [index, file] of migrations.entries()) {
+      const version = index + 1;
+      const { rows } = await client.query('SELECT version FROM schema_migrations WHERE version = $1', [version]);
+      if (rows.length) continue;
+      await client.query(await readFile(new URL(`./migrations/${file}`, import.meta.url), 'utf8'));
+      await client.query('INSERT INTO schema_migrations(version) VALUES ($1)', [version]);
     }
     await client.query('COMMIT');
   } catch (error) {

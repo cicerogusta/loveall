@@ -198,4 +198,15 @@ const importPhotos = db.transaction(() => {
 });
 importPhotos();
 
+if (!db.prepare('PRAGMA table_info(users)').all().some(info => info.name === 'pcd_opt_in')) {
+  db.exec('ALTER TABLE users ADD COLUMN pcd_opt_in INTEGER NOT NULL DEFAULT 0 CHECK (pcd_opt_in IN (0, 1))');
+}
+if (!db.prepare('PRAGMA table_info(users)').all().some(info => info.name === 'pcd_consent_at')) {
+  db.exec('ALTER TABLE users ADD COLUMN pcd_consent_at TEXT');
+}
+if (!db.prepare('PRAGMA table_info(users)').all().some(info => info.name === 'pcd_consent_version')) {
+  db.exec('ALTER TABLE users ADD COLUMN pcd_consent_version TEXT');
+}
+db.exec('CREATE INDEX IF NOT EXISTS users_pcd_discovery ON users(pcd_opt_in, is_active, is_banned)');
+
 export default db;

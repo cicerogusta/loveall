@@ -8,6 +8,8 @@ import okhttp3.mockwebserver.RecordedRequest
 internal class NativeApiDispatcher : Dispatcher() {
     var failLogin = false
     var requireConsent = false
+    var pcdMember = false
+    val membershipChanges = CopyOnWriteArrayList<String>()
     val deletions = CopyOnWriteArrayList<String>()
     val sentBodies = CopyOnWriteArrayList<String>()
     val registrations = CopyOnWriteArrayList<String>()
@@ -24,6 +26,24 @@ internal class NativeApiDispatcher : Dispatcher() {
         )
             return json(NativeApiContract.EMPTY_BODY, 401)
         return when {
+            path == NativeApiContract.PCD_MEMBERSHIP -> {
+                if (request.method == NativeApiContract.PUT_METHOD) {
+                    val body = request.body.readUtf8()
+                    membershipChanges.add(body)
+                    pcdMember =
+                        com.google.gson.JsonParser.parseString(body)
+                            .asJsonObject[NativeApiContract.ENABLED_FIELD]
+                            .asBoolean
+                }
+                val response =
+                    com.google.gson.JsonObject().apply {
+                        addProperty(NativeApiContract.ENABLED_FIELD, pcdMember)
+                    }
+                json(response.toString())
+            }
+            path == NativeApiContract.PCD_DISCOVER ->
+                if (pcdMember) json(NativeResponses.DISCOVER)
+                else json(NativeApiContract.EMPTY_BODY, 403)
             path == NativeApiContract.AUTH_LOGIN -> {
                 val response =
                     com.google.gson.JsonParser.parseString(NativeResponses.LOGIN).asJsonObject

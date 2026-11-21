@@ -1,0 +1,52 @@
+TAP version 13
+# Subtest: PcD requires explicit consent, protects membership and revokes discovery on exit
+ok 1 - PcD requires explicit consent, protects membership and revokes discovery on exit
+  ---
+  duration_ms: 3829.4709
+  type: 'test'
+  ...
+# Subtest: discovery binds gender preferences after all relationship exclusions
+ok 2 - discovery binds gender preferences after all relationship exclusions
+  ---
+  duration_ms: 3126.8166
+  type: 'test'
+  ...
+# Subtest: PcD mutual likes create real matches, respect blocks and preserve connections after opt out
+ok 3 - PcD mutual likes create real matches, respect blocks and preserve connections after opt out
+  ---
+  duration_ms: 2060.4841
+  type: 'test'
+  ...
+# Subtest: PostgreSQL TLS is mandatory remotely and connection-string flags cannot disable certificate validation
+ok 4 - PostgreSQL TLS is mandatory remotely and connection-string flags cannot disable certificate validation
+  ---
+  duration_ms: 1.6892
+  type: 'test'
+  ...
+# Subtest: PostgreSQL migrations are repeatable, private and preserve async transaction rollback and billing
+ok 5 - PostgreSQL migrations are repeatable, private and preserve async transaction rollback and billing
+  ---
+  duration_ms: 2955.2595
+  type: 'test'
+  ...
+# Subtest: HTTP contract works with PostgreSQL: registration, discovery, match, chat, photos, blocks and deletion
+ok 6 - HTTP contract works with PostgreSQL: registration, discovery, match, chat, photos, blocks and deletion
+  ---
+  duration_ms: 4665.7187
+  type: 'test'
+  ...
+# Subtest: PcD migration upgrades an existing version one database without enrolling existing users
+ok 7 - PcD migration upgrades an existing version one database without enrolling existing users
+  ---
+  duration_ms: 2133.9958
+  type: 'test'
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 10313.1534

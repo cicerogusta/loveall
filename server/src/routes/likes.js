@@ -8,7 +8,7 @@ import { checkBlocked } from '../middleware/safety.js';
 const router = Router();
 
 // Like ilimitado e gratuito!
-router.post('/like', authMiddleware, requireAcceptedTerms, checkBlocked, async (req, res) => {
+router.post(['/like', '/pcd-like'], authMiddleware, requireAcceptedTerms, checkBlocked, async (req, res) => {
   const { to_user, is_super_like } = req.body;
   const from_user = req.user.id;
 
@@ -26,6 +26,13 @@ router.post('/like', authMiddleware, requireAcceptedTerms, checkBlocked, async (
     // A ordem estável evita deadlock entre curtidas simultâneas do mesmo par.
     for (const id of [from_user, to_user].sort())
       await db.prepare('SELECT id FROM users WHERE id = ? FOR UPDATE').get(id);
+    if (req.path === '/pcd-like') {
+      const participants = await db.prepare(
+        'SELECT id FROM users WHERE id IN (?, ?) AND pcd_opt_in = 1 AND is_active = 1 AND is_banned = 0'
+      ).all(from_user, to_user);
+      if (participants.length !== 2)
+        return { status: 403, error: 'Ambas as pessoas precisam participar da comunidade PcD.' };
+    }
     const blocked = await db
       .prepare(
         'SELECT 1 FROM blocks WHERE (blocker_id = ? AND blocked_id = ?) OR (blocker_id = ? AND blocked_id = ?)'

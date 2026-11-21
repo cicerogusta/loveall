@@ -45,4 +45,4 @@ export async function startApi(t, overrides = {}) {
 
 export const password = 'SecurityTestPassword42';
 export const registration = (label, extra = {}) => ({ name: `Test ${label}`, email: `${label.toLowerCase()}@example.test`,
-  password, birthdate: '2000-01-01', gender: 'non_binary', looking_for: [], terms_version: '2026-11-20', ...extra });
+  password, birthdate: '2000-01-01', gender: 'non_binary', looking_for: [], terms_version: '2026-11-21', ...extra });

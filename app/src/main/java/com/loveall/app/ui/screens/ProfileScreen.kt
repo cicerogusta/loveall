@@ -28,6 +28,8 @@ fun ProfileScreen(
     onDeleteAccount: (String) -> Unit,
     onClearSessionError: () -> Unit,
     onAdFree: () -> Unit,
+    onPcdCommunity: () -> Unit,
+    onLibras: () -> Unit,
 ) {
     var deleteDialog by rememberSaveable { mutableStateOf(false) }
     var logoutDialog by rememberSaveable { mutableStateOf(false) }
@@ -94,6 +96,18 @@ fun ProfileScreen(
             stringResource(R.string.safety),
             stringResource(R.string.profile_safety_hint),
             onSafety,
+        )
+        MenuRow(
+            Icons.Default.Person,
+            stringResource(R.string.pcd_title),
+            stringResource(R.string.pcd_menu_hint),
+            onPcdCommunity,
+        )
+        MenuRow(
+            Icons.Default.Info,
+            stringResource(R.string.libras_title),
+            stringResource(R.string.libras_menu_hint),
+            onLibras,
         )
         FeatureTile(
             Icons.Default.FavoriteBorder,

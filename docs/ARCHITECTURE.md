@@ -61,3 +61,23 @@ Os testes de ViewModel são separados por funcionalidade, usam fakes em arquivos
 As páginas públicas da API separam conteúdo/renderização (`public/pages.js`) das rotas e validações HTTP (`routes/public-pages.js`). O formulário de exclusão reutiliza o serviço transacional existente em vez de duplicar o apagamento de dependências.
 
 A assinatura de upload é responsabilidade do build e scripts locais, sem credenciais no código Android ou no AppContainer. Consulte [a revisão de publicação](REVISAO-PUBLICACAO.md) para etapas externas, URLs e limites de validação.
+
+
+## Comunidade PcD e Libras — 21/11/2026
+
+`PcdCommunityRepository` é um contrato independente dos perfis públicos. A implementação API adapta endpoints específicos; `PcdCommunityViewModel` mantém participação e fila em `PcdCommunityState`, sem herdar de outro ViewModel. O consentimento fica inicialmente desmarcado e a API exige confirmação própria. Ao retornar à tela, o status é consultado novamente. Não há diagnóstico, laudo, inferência automática ou cadastro compulsório.
+
+O servidor persiste participação, data e versão do consentimento. As consultas de perfis públicos usam listas explícitas de colunas e não incluem esses campos. A curtida PcD verifica ambos os participantes dentro da transação que bloqueia o par em ordem estável. Uma saída concorrente não pode contornar essa verificação. Os matches usam as tabelas e regras comuns. Sair remove a declaração e o consentimento da base ativa; não desfaz conexões anteriores nem retira o perfil da descoberta geral.
+
+A migração PostgreSQL `002-pcd-community.sql` é aditiva e aplicada por uma lista ordenada, sob o bloqueio de `schema_migrations`. Contas existentes começam fora da comunidade. SQLite usa adições equivalentes. Testes verificam atualização de uma base versão 1, repetição sem perda de dados, consentimento, revogação e interação bloqueada.
+
+`LibrasLauncher` isola clipboard e abertura do aplicativo oficial VLibras. A tradução é externa: copiar, abrir e colar são ações explícitas. Não existe envio automático de conversas, WebView, widget JavaScript ou avatar embutido no LoveAll. O texto não vai ao servidor do LoveAll; o clipboard é marcado como sensível no Android 13+. O fallback abre a ficha oficial na Google Play.
+
+`GuideVideo` usa VideoView e controles Android, pausa ao sair do primeiro plano e libera reprodução ao remover o componente. O catálogo em `res/values/libras_videos.xml` só deve receber MP4 HTTPS autorizados, com Libras revisada e legendas em português. Os três endereços estão vazios porque os vídeos ainda não foram produzidos: a interface informa essa pendência. Playback real e qualidade linguística precisam de homologação. Referência: [VLibras oficial](https://www.gov.br/governodigital/pt-br/acessibilidade-e-usuario/vlibras).
+
+
+## Tutoriais locais em português
+
+`TutorialGuide` define os três assuntos e seus recursos MP4/transcrição. `TutorialGuides` permite selecionar um vídeo por vez e abrir o texto completo, sem serviço remoto ou repositório desnecessário para conteúdo estático. `GuideVideoSource` distingue explicitamente recursos incluídos no APK de endereços HTTPS aprovados. O player é recriado ao trocar a origem, evitando que o VideoView continue reproduzindo o assunto anterior.
+
+Os tutoriais em português ficam separados do catálogo de Libras. A reprodução local não precisa de internet; a autenticação e os fluxos de relacionamentos mantêm a dependência da API. `GuideVideo` libera o player ao sair da composição e pausa no ON_PAUSE da Activity. Instruções de produção, formato e testes: [guia dos vídeos](../deploy/video-guides/README.md).

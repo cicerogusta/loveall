@@ -43,6 +43,7 @@ internal fun MemberNavigation(
     ) { insets ->
         NavHost(nav, startDestination = startRoute, modifier = Modifier.padding(insets)) {
             exploreDestinations(container, nav)
+            accessibilityDestinations(container, nav, back)
             matchesDestination(container, nav)
             chatDestination(container, nav, userId, back)
             profileDestinations(

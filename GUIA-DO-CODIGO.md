@@ -629,3 +629,27 @@ No chat e na descoberta, helpers privados ao próprio ViewModel coordenam açõe
 A API oferece páginas públicas de privacidade, termos, segurança infantil e exclusão. O POST do formulário pede credenciais e confirmação, verifica a origem e limita tentativas; depois chama `deleteAccount`, que mantém as transações e a fila de remoção de fotos já usadas pelo Android. Publicar o código no Render é necessário para tornar esses endereços acessíveis na ficha da Play.
 
 A tarefa `preparePlayRelease` e `scripts/Build-PlayRelease.ps1` geram um AAB assinado com a chave de upload protegida localmente. O script não envia nada à Play. A chave fica fora do Git, e a credencial DPAPI é vinculada ao usuário Windows; backup externo recuperável e registros da Play continuam sendo etapas próprias. Veja [a revisão atual](docs/REVISAO-PUBLICACAO.md).
+
+
+## 19. Comunidade PcD e Libras
+
+Na descoberta e no perfil há atalhos independentes para a comunidade PcD e para Libras. Ninguém é inscrito automaticamente: a pessoa lê a explicação, marca o consentimento e confirma. O servidor exige esse consentimento, grava sua versão/data e só permite descobrir e curtir pessoas dessa seção enquanto ambos participarem. Não se solicita laudo ou diagnóstico. Participar revela essa autodeclaração aos demais membros; a tela avisa isso antes da entrada.
+
+O caminho dos dados é `PcdCommunityScreen → PcdCommunityViewModel → PcdCommunityRepository → ApiPcdCommunityRepository → PcdCommunityApi`. A tela recebe estado e callbacks. O ViewModel coordena operações e impede toques duplicados. O domínio define o contrato sem depender de Android ou Retrofit. A implementação converte DTOs para os perfis já usados no app. Na API, `profiles.js` controla participação/descoberta e `likes.js` reaproveita a transação real de curtidas e matches. A flag PcD não é acrescentada aos cartões públicos.
+
+Em Libras, o usuário pode copiar um texto e abrir o aplicativo oficial VLibras para colá-lo e traduzi-lo. Trata-se de integração com outro aplicativo, sem tradutor/avatar dentro do LoveAll. Isso mantém o cliente nativo e evita presumir uma API de compartilhamento não documentada pelo VLibras. Traduções automáticas podem errar; textos colados passam a ser tratados pelo serviço externo.
+
+Os guias de descoberta/conversa, segurança e comunidade PcD precisam de vídeos produzidos e revisados por pessoa fluente em Libras. Depois de obter os arquivos autorizados, hospede MP4 por HTTPS e preencha as três URLs em `app/src/main/res/values/libras_videos.xml`; inclua legendas e valide sinais, enquadramento, controles, conexão lenta e ciclo de vida em aparelho real. Não use URLs de páginas do YouTube como arquivos MP4. O player é Android VideoView, sem WebView. Enquanto não há arquivos, os guias são exibidos como em preparação.
+
+Publique a API com a migração 002 e políticas versão 2026-11-21 junto do Android atualizado. Um push Git não ativa automaticamente o deploy do Render neste projeto. Nenhuma migração foi executada no banco de produção durante o desenvolvimento desta funcionalidade.
+
+
+## 20. Vídeos animados em português
+
+Foram criados três tutoriais originais, de 46, 49 e 50 segundos, sobre descoberta/conversa, segurança da conta e comunidade PcD. O usuário escolheu vídeos com texto em português enquanto a produção em Libras permanece pendente. Todos exibem essa distinção e não possuem áudio.
+
+Os MP4 ficam em `app/src/main/res/raw`; o Android os inclui no APK e AAB. Na tela Acessibilidade e Libras, escolha um assunto, toque em Reproduzir vídeo e use os controles nativos para pausar ou avançar. A opção Ler instruções em texto oferece o mesmo conteúdo com escala de fonte e suporte à leitura assistiva. A reprodução dos arquivos é local, sem URL pública, conta de serviço ou deploy da API. Outros fluxos do app continuam dependendo da API.
+
+`TutorialGuide` associa assunto, vídeo e transcrição por IDs de recurso. `TutorialGuides` mantém a seleção na UI. `GuideVideoSource.Bundled` identifica os arquivos locais; `Remote` mantém o suporte separado a futuros vídeos de Libras por HTTPS. `GuideVideo` usa VideoView, reinicia a origem corretamente ao trocar de assunto e pausa ao ir para segundo plano.
+
+A produção pode ser repetida com `scripts/generate_tutorial_videos.py`, a partir de `deploy/video-guides/roteiros.json`. O script cria ilustrações próprias, indicadores animados, MP4, legendas SRT e transcrições Android. Nenhum dado real de usuário foi usado nas ilustrações. Veja [o guia de produção](deploy/video-guides/README.md).

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt-BR">
+    <string name="pcd_title">Comunidade PcD</string>
+    <string name="pcd_menu_hint">Conexões entre pessoas com deficiência, com participação voluntária</string>
+    <string name="pcd_welcome">Seu espaço para se conectar</string>
+    <string name="pcd_description">Um espaço de descoberta entre pessoas adultas que se autodeclaram pessoas com deficiência e escolhem participar. Não pedimos diagnóstico nem laudo. Curtidas mútuas geram matches e conversas como no restante do LoveAll. Denunciar, bloquear e desfazer match continuam disponíveis.</string>
+    <string name="pcd_consent">Declaro ser pessoa com deficiência e consinto com o uso dessa informação sensível para participar e aparecer na comunidade PcD. Entendo que os outros participantes poderão inferir essa informação ao me encontrar aqui. Posso sair a qualquer momento.</string>
+    <string name="pcd_join">Concordar e entrar na comunidade</string>
+    <string name="pcd_member_notice">Você participa da comunidade PcD. Essa participação não aparece como selo no perfil público e não é enviada para segmentação de anúncios. Seu perfil continua disponível na descoberta geral.</string>
+    <string name="pcd_leave">Sair da comunidade</string>
+    <string name="pcd_leave_description">Você deixará de aparecer nesta seção e sua declaração e registro de consentimento serão removidos da base ativa. Matches, curtidas e conversas existentes continuam disponíveis. Seu perfil permanece na descoberta geral. Você pode entrar novamente se desejar.</string>
+    <string name="libras_title">Acessibilidade e Libras</string>
+    <string name="libras_menu_hint">Tutoriais offline em português e acesso ao VLibras</string>
+    <string name="libras_translator">Traduzir com o VLibras</string>
+    <string name="libras_translation_notice">O VLibras é um aplicativo externo gratuito. Digite ou cole um texto abaixo, copie e abra o VLibras; lá, cole o texto no tradutor. Se ele não estiver instalado, abriremos sua página na Google Play. Nenhuma conversa é enviada automaticamente. Ao copiar, o texto fica na área de transferência do Android; evite dados pessoais e mensagens privadas de terceiros. O conteúdo que você colar no VLibras será tratado conforme as políticas dele. A tradução automática pode errar e não substitui intérprete humano.</string>
+    <string name="libras_text_label">Texto em português (até 2.000 caracteres)</string>
+    <string name="libras_copy">Copiar texto para tradução</string>
+    <string name="libras_copied">Texto copiado. Abra o VLibras e cole no campo de tradução.</string>
+    <string name="libras_open">Abrir ou instalar VLibras</string>
+    <string name="libras_unavailable">Não foi possível abrir. Procure VLibras, dos Serviços e Informações do Brasil, na Google Play.</string>
+    <string name="libras_guides">Guias do LoveAll em Libras</string>
+    <string name="libras_guides_pending">Os vídeos em Libras ainda precisam ser produzidos e revisados por pessoa fluente. Os tutoriais disponíveis acima usam texto em português e não substituem Libras.</string>
+    <string name="libras_guide_discovery">Descobrir pessoas, curtir e conversar</string>
+    <string name="libras_guide_safety">Denunciar, bloquear e excluir a conta</string>
+    <string name="libras_guide_pcd">Participar e sair da comunidade PcD</string>
+    <string name="libras_video_play">Reproduzir vídeo em Libras</string>
+    <string name="libras_video_error">Não foi possível carregar este vídeo. Tente abrir esta tela novamente.</string>
+</resources>

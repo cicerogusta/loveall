@@ -30,7 +30,7 @@ test('PostgreSQL TLS is mandatory remotely and connection-string flags cannot di
 test('PostgreSQL migrations are repeatable, private and preserve async transaction rollback and billing', async (t) => {
   const { pool, db } = await postgresFixture(t);
   await migratePostgres(pool);
-  assert.equal((await db.prepare('SELECT COUNT(*) AS count FROM schema_migrations').get()).count, 1);
+  assert.equal((await db.prepare('SELECT COUNT(*) AS count FROM schema_migrations').get()).count, 2);
   await pool.query('CREATE ROLE anonymous_test');
   assert.equal(
     (await pool.query("SELECT has_schema_privilege('anonymous_test', 'loveall', 'USAGE') AS allowed")).rows[0]
@@ -77,11 +77,19 @@ test('HTTP contract works with PostgreSQL: registration, discovery, match, chat,
   const alice = await api.register('Alice'),
     bob = await api.register('Bob');
   const asAlice = (route, options = {}) => api.request(route, { token: alice.token, ...options });
+  for (const token of [alice.token, bob.token]) {
+    assert.equal((await api.request('/api/profiles/me/pcd-community', {
+      token, method: 'PUT', body: { enabled: true, consent: true }
+    })).status, 200);
+  }
+  const community = await asAlice('/api/profiles/pcd-discover');
+  assert.deepEqual((await community.json()).profiles.map(profile => profile.id), [bob.user.id]);
+  assert.equal((await db.prepare('SELECT pcd_consent_version FROM users WHERE id = ?').get(alice.user.id)).pcd_consent_version, '2026-11-21');
   let response = await asAlice('/api/profiles/discover');
   assert.equal(response.status, 200);
   assert.equal((await response.json()).profiles[0].id, bob.user.id);
   assert.equal(
-    (await asAlice('/api/likes/like', { method: 'POST', body: { to_user: bob.user.id } })).status,
+    (await asAlice('/api/likes/pcd-like', { method: 'POST', body: { to_user: bob.user.id } })).status,
     200
   );
   response = await api.request('/api/likes/like', {
@@ -122,4 +130,18 @@ test('HTTP contract works with PostgreSQL: registration, discovery, match, chat,
   assert.equal((await fetch(`${api.base}${photo}`)).status, 404);
   assert.equal((await db.prepare('SELECT COUNT(*) AS count FROM users').get()).count, 1);
   assert.equal((await db.prepare('SELECT COUNT(*) AS count FROM messages').get()).count, 0);
+});
+
+test('PcD migration upgrades an existing version one database without enrolling existing users', async t => {
+  const { pool, db } = await postgresFixture(t);
+  await db.prepare('ALTER TABLE users DROP COLUMN pcd_opt_in').run();
+  await db.prepare('ALTER TABLE users DROP COLUMN pcd_consent_at').run();
+  await db.prepare('ALTER TABLE users DROP COLUMN pcd_consent_version').run();
+  await db.prepare('DELETE FROM schema_migrations WHERE version = 2').run();
+  await db.prepare("INSERT INTO users (id, email, password, name, birthdate, gender) VALUES ('legacy', 'legacy@example.test', 'hash', 'Legacy', '2000-01-01', 'woman')").run();
+  await migratePostgres(pool);
+  await migratePostgres(pool);
+  const user = await db.prepare('SELECT name, pcd_opt_in, pcd_consent_at, pcd_consent_version FROM users WHERE id = ?').get('legacy');
+  assert.deepEqual(user, { name: 'Legacy', pcd_opt_in: 0, pcd_consent_at: null, pcd_consent_version: null });
+  assert.equal((await db.prepare('SELECT COUNT(*) AS count FROM schema_migrations').get()).count, 2);
 });

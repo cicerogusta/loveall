@@ -1,11 +1,16 @@
 package com.loveall.app.ui.navigation
 
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import com.loveall.app.AppContainer
+import com.loveall.app.R
 import com.loveall.app.presentation.ExploreViewModel
 import com.loveall.app.ui.screens.ExploreScreen
 
@@ -33,6 +38,17 @@ internal fun NavGraphBuilder.exploreDestinations(container: AppContainer, nav: N
                 destination == Routes.LIKES,
                 adContent = {
                     if (destination == Routes.DISCOVER) com.loveall.app.ui.monetization.AdBanner()
+                },
+                accessibilityContent = {
+                    if (destination == Routes.DISCOVER)
+                        FlowRow {
+                            TextButton(onClick = { nav.navigate(Routes.PCD_COMMUNITY) }) {
+                                Text(stringResource(R.string.pcd_title))
+                            }
+                            TextButton(onClick = { nav.navigate(Routes.LIBRAS) }) {
+                                Text(stringResource(R.string.libras_title))
+                            }
+                        }
                 },
             )
         }

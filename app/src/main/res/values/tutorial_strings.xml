@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt-BR">
+    <string name="tutorials_title">Tutoriais em português</string>
+    <string name="tutorials_notice">Três vídeos animados com texto em português, disponíveis sem internet. Eles não têm áudio nem tradução em Libras. Escolha um assunto e toque em Reproduzir vídeo. Você também pode ler as instruções em texto.</string>
+    <string name="guide_video_play">Reproduzir vídeo</string>
+    <string name="tutorial_show_text">Ler instruções em texto</string>
+    <string name="tutorial_hide_text">Ocultar instruções em texto</string>
+</resources>

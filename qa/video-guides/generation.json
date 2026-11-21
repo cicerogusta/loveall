@@ -1,0 +1,23 @@
+[
+  {
+    "id": "tutorial_discovery",
+    "seconds": 46,
+    "bytes": 292123,
+    "sha256": "6d2b726e38b08fb451e1fdaf8b31cdd1415f7b434ad53af4361582aff5ffc951",
+    "libras": false
+  },
+  {
+    "id": "tutorial_safety",
+    "seconds": 49,
+    "bytes": 276486,
+    "sha256": "d3221e83a46ff82aa425d730c175022f95b7ea8702025736343acff3410ad947",
+    "libras": false
+  },
+  {
+    "id": "tutorial_pcd",
+    "seconds": 50,
+    "bytes": 318525,
+    "sha256": "86904fc27a6fd56f490a053ac36002b5ae7ee5ad1513c3507fa5eed02c899d57",
+    "libras": false
+  }
+]

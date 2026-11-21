@@ -3,6 +3,8 @@ package com.loveall.app.ui.navigation
 import android.net.Uri
 
 internal object Routes {
+    const val PCD_COMMUNITY = "pcd-community"
+    const val LIBRAS = "libras"
     const val WELCOME = "welcome"
     const val LOGIN = "login"
     const val REGISTER = "register"

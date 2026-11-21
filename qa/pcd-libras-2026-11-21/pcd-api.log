@@ -1,0 +1,22 @@
+TAP version 13
+# Subtest: PcD requires explicit consent, protects membership and revokes discovery on exit
+ok 1 - PcD requires explicit consent, protects membership and revokes discovery on exit
+  ---
+  duration_ms: 2501.1651
+  type: 'test'
+  ...
+# Subtest: PcD mutual likes create real matches, respect blocks and preserve connections after opt out
+ok 2 - PcD mutual likes create real matches, respect blocks and preserve connections after opt out
+  ---
+  duration_ms: 1494.356
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4126.4428

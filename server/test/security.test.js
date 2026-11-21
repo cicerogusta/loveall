@@ -50,7 +50,7 @@ test('legacy accounts must accept current terms before posting, but can delete w
   db.prepare('UPDATE users SET terms_version = NULL WHERE id = ?').run(account.user.id);
   assert.equal((await api.request('/api/profiles/me', { method: 'PUT', token: account.token, body: { bio: 'Hello' } })).status, 403);
   assert.equal((await api.request('/api/auth/terms', { method: 'POST', token: account.token, body: { terms_version: 'obsolete' } })).status, 400);
-  assert.equal((await api.request('/api/auth/terms', { method: 'POST', token: account.token, body: { terms_version: '2026-11-20' } })).status, 200);
+  assert.equal((await api.request('/api/auth/terms', { method: 'POST', token: account.token, body: { terms_version: '2026-11-21' } })).status, 200);
   assert.equal((await api.request('/api/profiles/me', { method: 'PUT', token: account.token, body: { bio: 'Hello' } })).status, 200);
   db.prepare('UPDATE users SET terms_version = NULL WHERE id = ?').run(account.user.id);
   assert.equal((await api.request('/api/auth/me', { method: 'DELETE', token: account.token, body: { password } })).status, 204);

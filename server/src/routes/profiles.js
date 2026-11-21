@@ -110,12 +110,34 @@ router.put('/me', authMiddleware, requireAcceptedTerms, async (req, res) => {
   res.json({ user: safeUser });
 });
 
-router.get('/discover', authMiddleware, async (req, res) => {
+router.get('/me/pcd-community', authMiddleware, async (req, res) => {
+  res.set('Cache-Control', 'no-store').json({ enabled: req.user.pcd_opt_in === 1 });
+});
+
+router.put('/me/pcd-community', authMiddleware,
+  // Revogar consentimento continua disponível mesmo após uma mudança dos termos.
+  (req, res, next) => req.body?.enabled === false ? next() : requireAcceptedTerms(req, res, next),
+  async (req, res) => {
+  if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body))
+    return res.status(400).json({ error: 'Dados de participação inválidos.' });
+  const { enabled, consent } = req.body;
+  if (typeof enabled !== 'boolean' || (enabled && consent !== true) ||
+      Object.keys(req.body).some(key => !['enabled', 'consent'].includes(key)))
+    return res.status(400).json({ error: 'Confirme a participação voluntária e o consentimento para entrar na comunidade PcD.' });
+  await db.prepare("UPDATE users SET pcd_opt_in = ?, pcd_consent_at = ?, pcd_consent_version = ?, updated_at = datetime('now') WHERE id = ?")
+    .run(enabled ? 1 : 0, enabled ? new Date().toISOString() : null, enabled ? '2026-11-21' : null, req.user.id);
+  res.set('Cache-Control', 'no-store').json({ enabled });
+});
+
+router.get(['/discover', '/pcd-discover'], authMiddleware, async (req, res) => {
+  const community = req.path === '/pcd-discover';
+  if (community && req.user.pcd_opt_in !== 1)
+    return res.status(403).json({ error: 'Entre voluntariamente na comunidade PcD para descobrir participantes.' });
   const user = req.user;
   const lookingFor = user.looking_for;
 
   let genderFilter = '';
-  const filterParams = [user.id, user.id, user.id, user.id, user.id, user.id];
+  const filterParams = Array(8).fill(user.id);
 
   if (lookingFor.length > 0) {
     const placeholders = lookingFor.map(() => '?').join(',');
@@ -131,6 +153,7 @@ router.get('/discover', authMiddleware, async (req, res) => {
     WHERE u.id != ?
       AND u.is_active = 1
       AND u.is_banned = 0
+      ${community ? 'AND u.pcd_opt_in = 1' : ''}
       AND u.id NOT IN (SELECT to_user FROM likes WHERE from_user = ?)
       AND u.id NOT IN (SELECT to_user FROM dislikes WHERE from_user = ?)
       AND u.id NOT IN (SELECT blocked_id FROM blocks WHERE blocker_id = ?)
@@ -144,7 +167,7 @@ router.get('/discover', authMiddleware, async (req, res) => {
     LIMIT 20
   `
     )
-    .all(...filterParams, user.id, user.id);
+    .all(...filterParams);
 
   const result = profiles.map((p) => ({
     ...p,
@@ -153,7 +176,7 @@ router.get('/discover', authMiddleware, async (req, res) => {
     age: calculateAge(p.birthdate),
   }));
 
-  res.json({ profiles: result });
+  res.set('Cache-Control', 'no-store').json({ profiles: result });
 });
 
 router.get('/:userId', authMiddleware, checkBlocked, async (req, res) => {

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Preencher somente com MP4 HTTPS autorizados e revisados por pessoa fluente
+         em Libras. Incluir legendas em português no vídeo. Não usar páginas YouTube. -->
+    <string name="libras_video_discovery_url" translatable="false"></string>
+    <string name="libras_video_safety_url" translatable="false"></string>
+    <string name="libras_video_pcd_url" translatable="false"></string>
+</resources>

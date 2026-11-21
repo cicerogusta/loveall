@@ -1,0 +1,144 @@
+{
+  "cases": [
+    {
+      "class": "com.loveall.app.AdFreeSubscriptionTest",
+      "name": "pendingPaymentCannotStartAnotherPurchaseAndAllowsRestoration",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.AdFreeSubscriptionTest",
+      "name": "activeSubscriptionHidesPurchaseAndExposesManagement",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.AdFreeSubscriptionTest",
+      "name": "storeOfferDisplaysPricePeriodAndRenewalBeforeDelegatingPurchase",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.AdFreeSubscriptionTest",
+      "name": "missingConfigurationHidesPurchaseAndShowsAvailabilityMessage",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.AdFreeSubscriptionTest",
+      "name": "unknownEntitlementCannotStartPurchase",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.BirthDateFieldTest",
+      "name": "calendarUsesPortugueseBrazilAndReturnsDayMonthYear",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.BirthDateFieldTest",
+      "name": "numericInputShowsBrazilianMaskAndRejectsImpossibleDate",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.KeystoreSessionStoreTest",
+      "name": "corruptedCiphertextRequiresNewLogin",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.KeystoreSessionStoreTest",
+      "name": "tokenRoundTripsWithoutPlaintextOnDisk",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.KeystoreSessionStoreTest",
+      "name": "sameTokenUsesDifferentRandomIv",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.NativeFlowTest",
+      "name": "pcdCommunityConsentAndRevocationUseAuthenticatedHttp",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.NativeFlowTest",
+      "name": "nativeLoginMatchesAndSendMessageThroughHTTPContract",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.NativeFlowTest",
+      "name": "librasIsAvailableWithoutJoiningPcdAndClearlyIdentifiesPendingVideos",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.NativeFlowTest",
+      "name": "safetyAndPlansLoadFromAuthenticatedApi",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.NativeFlowTest",
+      "name": "accountDeletionRequiresPasswordAllowsRetryAndReturnsToWelcome",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.NativeFlowTest",
+      "name": "redesignedConversationMenuPreservesReportingAndSafetyActions",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.NativeFlowTest",
+      "name": "adultRegistrationSendsPreferencesAndOpensNativeProfileEditor",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.NativeFlowTest",
+      "name": "invalidCredentialsKeepPublicNavigationAndAllowRetry",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.NativeFlowTest",
+      "name": "oldAccountMustReviewTermsBeforeEnteringMemberNavigation",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.NativeFlowTest",
+      "name": "welcomeRendersAndRegistrationStartsWithAccessibleFields",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.PlansSectionsTest",
+      "name": "enabledOfferDelegatesCheckoutForSelectedPlan",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.PlansSectionsTest",
+      "name": "disabledExternalCheckoutHidesOffersAndPurchaseButton",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.PlansSectionsTest",
+      "name": "pendingPaymentDisablesNewPurchaseAndDelegatesStatusCheck",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.ProfileEditorSectionsTest",
+      "name": "editsAcrossSectionsAndPhotoRemovalReachSave",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.ProfilePhotoPickerTest",
+      "name": "cancelingPickerDoesNotAddPhoto",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.ProfilePhotoPickerTest",
+      "name": "selectedImageIsDeliveredFromNativePicker",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.ProfilePhotoReaderTest",
+      "name": "selectedContentImageIsResizedOrientedAndStrippedOfGps",
+      "passed": true
+    },
+    {
+      "class": "com.loveall.app.ProfilePhotoReaderTest",
+      "name": "unsupportedSourceFailsWithValidationError",
+      "passed": true
+    }
+  ]
+}

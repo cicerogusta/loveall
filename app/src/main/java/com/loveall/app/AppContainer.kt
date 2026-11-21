@@ -81,6 +81,12 @@ class AppContainer(context: Context, val apiBaseUrl: String = BuildConfig.API_BA
             )
             .build()
     private val authenticatedRetrofit = retrofit(authenticatedClient)
+    val pcdCommunity: com.loveall.app.domain.repository.PcdCommunityRepository =
+        com.loveall.app.data.repository.ApiPcdCommunityRepository(
+            authenticatedRetrofit.create(
+                com.loveall.app.data.remote.api.PcdCommunityApi::class.java
+            )
+        )
     val profiles: ProfileRepository =
         ApiProfileRepository(authenticatedRetrofit.create(ProfileApi::class.java))
     val connections: ConnectionsRepository =

@@ -43,6 +43,8 @@ internal fun NavGraphBuilder.profileDestinations(
             onDeleteAccount,
             onClearSessionError,
             { nav.navigate(Routes.AD_FREE) },
+            { nav.navigate(Routes.PCD_COMMUNITY) },
+            { nav.navigate(Routes.LIBRAS) },
         )
     }
     composable(Routes.EDIT) {

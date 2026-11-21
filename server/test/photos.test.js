@@ -32,7 +32,7 @@ test('authenticated photo upload, validation, serving and profile persistence', 
   assert.ok(ready, 'isolated API should start');
   assert.equal((await fetch(`${base}/api/profiles/me/photos`, { method: 'POST' })).status, 401);
   const registration = await fetch(`${base}/api/auth/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: 'Photo Test', email: 'photo@example.test', password: 'TestPassword42', birthdate: '2000-01-01', gender: 'non_binary', terms_version: '2026-11-20' }) });
+    body: JSON.stringify({ name: 'Photo Test', email: 'photo@example.test', password: 'TestPassword42', birthdate: '2000-01-01', gender: 'non_binary', terms_version: '2026-11-21' }) });
   assert.equal(registration.status, 201);
   const { token } = await registration.json();
   const headers = { Authorization: `Bearer ${token}` };

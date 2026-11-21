@@ -1,5 +1,13 @@
 # Revisão para publicação na Google Play — 20/11/2026
 
+**Complemento de 21/11/2026 — vídeos em português:** três MP4 originais foram incluídos em recursos Android, com reprodução local e transcrição acessível. Não têm áudio nem Libras, conforme a escolha do responsável. Os vídeos em Libras continuam pendentes; não anunciar os tutoriais em português como conteúdo sinalizado. Produção e evidências: `deploy/video-guides/README.md` e `qa/video-guides`.
+
+**Complemento de 21/11/2026 — PcD e Libras:** o código agora inclui comunidade PcD voluntária, consentimento sensível separado, migração aditiva 002, descoberta restrita e curtidas com verificação transacional da participação. Políticas e fixtures passam à versão 2026-11-21; publicar API e Android compatíveis. A participação não deve ser usada em segmentação de anúncios. Revisar a declaração de dados da Play para a autodeclaração de deficiência, além dos dados já listados abaixo.
+
+Libras usa abertura explícita do aplicativo externo VLibras, com cópia/colagem pelo usuário. **Não há avatar/tradutor embutido no LoveAll.** Os três guias de funções possuem player Android e catálogo preparado, mas os vídeos em Libras ainda não existem: produzir conteúdo autorizado, revisar com pessoa fluente, incluir legendas e homologar playback antes de anunciar esses vídeos como disponíveis. O catálogo fica em `app/src/main/res/values/libras_videos.xml`. Ver detalhes na seção 19 do guia do código. As evidências de 20/11 abaixo pertencem ao release anterior, não validam automaticamente esse complemento.
+
+Validação do complemento: 162 testes JVM, 47 testes da API e 29 cenários únicos no emulador API 37 aprovados (28 na regressão completa, mais três verificações finais dirigidas, incluindo um cenário novo de consentimento após saída remota). Lint debug/release sem erros; permanecem avisos de dependências/compatibilidade e um falso positivo de ortografia em português. Resultados em `qa/pcd-libras-2026-11-21/results.json`. Testes de banco usam SQLite e PGlite via driver pg, sem alterações no Supabase de produção. Vídeos reais, tradução no aplicativo VLibras instalado e deploy cloud ainda exigem homologação.
+
 O código foi revisado para o aplicativo Android Kotlin/Compose. O pacote de distribuição é **com.loveall.app**, versão **1.0.0**, versionCode **1**, minSdk 26 e targetSdk 36. Nenhuma versão foi enviada à Play nesta revisão.
 
 ## Alterações desta revisão

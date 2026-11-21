@@ -36,6 +36,7 @@ fun ExploreScreen(
     onDismissMatch: () -> Unit,
     incomingLikes: Boolean = false,
     adContent: @Composable () -> Unit = {},
+    accessibilityContent: @Composable () -> Unit = {},
 ) {
     val profile = state.profiles.firstOrNull()
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
@@ -48,6 +49,7 @@ fun ExploreScreen(
                 verticalArrangement = Arrangement.spacedBy(AppSpacing.medium),
             ) {
                 ExploreHeader(incomingLikes, !state.loading && !state.busy, onRefresh)
+                accessibilityContent()
                 ErrorCard(state.error, onRefresh)
                 if (state.loading && profile == null) Loading()
                 ExploreProfiles(state, incomingLikes, onOpen)

@@ -14,7 +14,7 @@ export const genders = new Set([
   'other',
   'prefer_not_say',
 ]);
-export const legalVersion = '2026-11-20';
+export const legalVersion = '2026-11-21';
 const text = (value, max, min = 0) =>
   typeof value === 'string' && value.trim().length >= min && value.length <= max;
 const integer = (value, min, max) => Number.isInteger(value) && value >= min && value <= max;

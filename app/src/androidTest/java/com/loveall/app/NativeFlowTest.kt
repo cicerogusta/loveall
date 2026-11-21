@@ -102,6 +102,49 @@ class NativeFlowTest {
     }
 
     @Test
+    fun pcdCommunityConsentAndRevocationUseAuthenticatedHttp() {
+        login()
+        compose.onNodeWithText(label(R.string.pcd_title)).performScrollTo().performClick()
+        awaitText(label(R.string.pcd_join))
+        compose.onNodeWithText(label(R.string.pcd_join)).performScrollTo().assertIsNotEnabled()
+        compose.onNode(isToggleable()).performScrollTo().performClick()
+        compose.onNodeWithText(label(R.string.pcd_join)).performScrollTo().performClick()
+        awaitText(NativeScenario.PARTNER_NAME)
+        assertTrue(apiDispatcher.pcdMember)
+        val body =
+            com.google.gson.JsonParser.parseString(apiDispatcher.membershipChanges.single())
+                .asJsonObject
+        assertTrue(body[NativeApiContract.CONSENT_FIELD].asBoolean)
+        compose.onNodeWithText(label(R.string.pcd_leave)).performScrollTo().performClick()
+        compose.onNodeWithText(label(R.string.pcd_leave_description)).assertExists()
+        compose
+            .onAllNodesWithText(label(R.string.pcd_leave))
+            .filter(hasClickAction())
+            .onLast()
+            .performClick()
+        awaitText(label(R.string.pcd_join))
+        assertFalse(apiDispatcher.pcdMember)
+        compose.onNodeWithText(label(R.string.pcd_join)).assertIsNotEnabled()
+    }
+
+    @Test
+    fun librasIsAvailableWithoutJoiningPcdAndClearlyIdentifiesPendingVideos() {
+        login()
+        compose.onNodeWithText(label(R.string.libras_title)).performScrollTo().performClick()
+        awaitText(label(R.string.libras_translator))
+        compose.onNodeWithText(label(R.string.libras_copy)).performScrollTo().assertIsNotEnabled()
+        field(R.string.libras_text_label)
+            .performScrollTo()
+            .performTextInput(label(R.string.discover))
+        androidx.test.espresso.Espresso.closeSoftKeyboard()
+        compose.onNodeWithText(label(R.string.libras_copy)).performScrollTo().assertIsEnabled()
+        compose.onNodeWithText(label(R.string.libras_open)).performScrollTo().assertIsEnabled()
+        compose.onNodeWithText(label(R.string.libras_guide_pcd)).performScrollTo().assertExists()
+        compose.onAllNodesWithText(label(R.string.libras_guides_pending)).assertCountEquals(1)
+        assertTrue(apiDispatcher.membershipChanges.isEmpty())
+    }
+
+    @Test
     fun nativeLoginMatchesAndSendMessageThroughHTTPContract() {
         login()
         screenshot(NativeScreenshots.DISCOVER)

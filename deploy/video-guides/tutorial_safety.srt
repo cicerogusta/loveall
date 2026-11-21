@@ -1,0 +1,29 @@
+1
+00:00:00,000 --> 00:00:08,000
+Você tem o controle
+No perfil de outra pessoa, há opções de denúncia e bloqueio. Na conversa, abra o menu de opções.
+
+2
+00:00:08,000 --> 00:00:16,000
+Denuncie um problema
+Toque em Denunciar, escolha o motivo e confirme. Descreva o problema sem anexar conteúdo ilegal ou dados de terceiros.
+
+3
+00:00:16,000 --> 00:00:24,000
+Bloqueie se precisar
+Toque em Bloquear e confirme. O bloqueio impede novas interações com aquela conta. Não há obrigação de manter contato.
+
+4
+00:00:24,000 --> 00:00:32,000
+Encerre uma conexão
+Na conversa, abra o menu e escolha Desfazer match. Confirme somente se quiser encerrar aquela conexão.
+
+5
+00:00:32,000 --> 00:00:40,000
+Excluir sua conta
+Na aba Perfil, toque em Excluir conta. Leia o aviso e digite a senha da sua conta LoveAll.
+
+6
+00:00:40,000 --> 00:00:49,000
+Confira antes de confirmar
+A exclusão é permanente e remove a conta e os dados associados da base ativa, incluindo conversas compartilhadas. Confirme apenas se tiver certeza.

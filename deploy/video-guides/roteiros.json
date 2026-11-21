@@ -1,0 +1,45 @@
+{
+  "language": "pt-BR",
+  "format": "Tutorial animado com texto em português, sem áudio e sem tradução em Libras",
+  "width": 720,
+  "height": 1280,
+  "fps": 20,
+  "guides": [
+    {
+      "id": "tutorial_discovery",
+      "title": "Descobrir e conversar",
+      "scenes": [
+        {"title": "Conheça novas pessoas", "text": "Na aba Descobrir, veja os perfis disponíveis. Toque no cartão para conhecer melhor a pessoa.", "action": "Abra um perfil", "visual": "discover", "seconds": 7},
+        {"title": "Escolha com liberdade", "text": "Gostou do perfil? Toque em Curtir. Para ver outra pessoa, toque em Passar. Respeite as escolhas de cada pessoa.", "action": "Curtir ou passar", "visual": "like", "seconds": 8},
+        {"title": "O interesse é mútuo", "text": "Quando as duas pessoas se curtem, acontece um match. Uma curtida sozinha não abre uma conversa.", "action": "As duas pessoas precisam curtir", "visual": "match", "seconds": 8},
+        {"title": "Encontre suas conexões", "text": "Abra a aba Matches e toque na conexão para entrar na conversa.", "action": "Abra Matches", "visual": "matches", "seconds": 7},
+        {"title": "Comece a conversar", "text": "Escreva sua mensagem no campo da conversa e toque em Enviar. Seja gentil e não compartilhe dados sensíveis.", "action": "Escreva e envie", "visual": "chat", "seconds": 8},
+        {"title": "Cuide da sua segurança", "text": "Se precisar, use as opções de denunciar, bloquear ou desfazer match. Você não precisa continuar uma conversa desconfortável.", "action": "Você controla suas conexões", "visual": "safety", "seconds": 8}
+      ]
+    },
+    {
+      "id": "tutorial_safety",
+      "title": "Segurança e sua conta",
+      "scenes": [
+        {"title": "Você tem o controle", "text": "No perfil de outra pessoa, há opções de denúncia e bloqueio. Na conversa, abra o menu de opções.", "action": "Abra as opções de segurança", "visual": "safety", "seconds": 8},
+        {"title": "Denuncie um problema", "text": "Toque em Denunciar, escolha o motivo e confirme. Descreva o problema sem anexar conteúdo ilegal ou dados de terceiros.", "action": "Escolha o motivo e confirme", "visual": "report", "seconds": 8},
+        {"title": "Bloqueie se precisar", "text": "Toque em Bloquear e confirme. O bloqueio impede novas interações com aquela conta. Não há obrigação de manter contato.", "action": "Confirme o bloqueio", "visual": "block", "seconds": 8},
+        {"title": "Encerre uma conexão", "text": "Na conversa, abra o menu e escolha Desfazer match. Confirme somente se quiser encerrar aquela conexão.", "action": "Desfazer match é uma escolha sua", "visual": "unmatch", "seconds": 8},
+        {"title": "Excluir sua conta", "text": "Na aba Perfil, toque em Excluir conta. Leia o aviso e digite a senha da sua conta LoveAll.", "action": "Perfil → Excluir conta", "visual": "delete", "seconds": 8},
+        {"title": "Confira antes de confirmar", "text": "A exclusão é permanente e remove a conta e os dados associados da base ativa, incluindo conversas compartilhadas. Confirme apenas se tiver certeza.", "action": "Leia o aviso com atenção", "visual": "confirm_delete", "seconds": 9}
+      ]
+    },
+    {
+      "id": "tutorial_pcd",
+      "title": "Sua comunidade PcD",
+      "scenes": [
+        {"title": "Um espaço voluntário", "text": "Na descoberta ou no seu Perfil, abra Comunidade PcD. A participação é opcional e destinada a pessoas adultas com deficiência.", "action": "Abra Comunidade PcD", "visual": "pcd", "seconds": 8},
+        {"title": "Leia antes de participar", "text": "A participação é autodeclarada. Não pedimos laudo ou diagnóstico. Ao entrar, outros participantes poderão inferir essa informação ao encontrar seu perfil.", "action": "Entenda como sua informação é usada", "visual": "pcd_info", "seconds": 9},
+        {"title": "Confirme seu consentimento", "text": "Se concordar e for pessoa com deficiência, marque a declaração e toque em Concordar e entrar na comunidade.", "action": "Leia, marque e confirme", "visual": "consent", "seconds": 8},
+        {"title": "Descubra participantes", "text": "Nesta seção, você encontra outras pessoas que também escolheram participar. Curtidas mútuas geram matches e conversas pelo fluxo normal.", "action": "Conecte-se com respeito", "visual": "discover", "seconds": 8},
+        {"title": "Saia quando quiser", "text": "Na comunidade, toque em Sair da comunidade e confirme. Sua participação e o registro de consentimento são removidos da base ativa.", "action": "Sair da comunidade", "visual": "leave", "seconds": 8},
+        {"title": "Suas conexões continuam", "text": "Sair da comunidade não desfaz matches nem conversas existentes. Seu perfil continua na descoberta geral. Para entrar novamente, confirme o consentimento outra vez.", "action": "A escolha continua sendo sua", "visual": "matches", "seconds": 9}
+      ]
+    }
+  ]
+}
